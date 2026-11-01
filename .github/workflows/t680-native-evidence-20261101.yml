@@ -1,0 +1,125 @@
+name: T680 one-time real Chromium native acceptance
+on:
+  push:
+    branches: [owner/t680-native-evidence-20261101]
+permissions:
+  contents: read
+jobs:
+  real-interactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: lijiabao1998/GlimmerTown
+          ref: a93a6984ac90fa5bb963f58d2853b3e5aacf70f6
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare exact T680 browser and isolated local origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C candidate rev-parse HEAD)" = "a93a6984ac90fa5bb963f58d2853b3e5aacf70f6"
+          command -v google-chrome
+          mkdir -p evidence
+          npm install --prefix "$RUNNER_TEMP/t680play" --no-save playwright@1.56.1
+          python3 -m http.server 8762 --bind 127.0.0.1 --directory candidate > evidence/server.log 2>&1 &
+          for i in $(seq 1 50); do
+            if curl -fsS -o /dev/null http://127.0.0.1:8762/index.html; then break; fi
+            sleep 1
+          done
+          curl -fsS -o /dev/null http://127.0.0.1:8762/index.html
+      - name: Real touch, menu handlers, focus, fallback, and desktop
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/t680-native.cjs" <<'JS'
+          const {chromium}=require('playwright'),fs=require('fs'),assert=require('assert/strict');
+          const OUT=process.env.GITHUB_WORKSPACE+'/evidence',URL='http://127.0.0.1:8762/index.html';
+          const TARGET_SHA='a93a6984ac90fa5bb963f58d2853b3e5aacf70f6';
+          const observations={head:TARGET_SHA,checks:[],actions:[],screenshots:[],browser:null,failures:[]};
+          const check=(ok,msg,detail)=>{observations.checks.push({ok:!!ok,msg,detail});if(!ok)throw Error(msg+' '+JSON.stringify(detail));};
+          const shot=async(p,label)=>{const name='t680-'+label+'.png';await p.screenshot({path:OUT+'/'+name,animations:'disabled',timeout:90000});observations.screenshots.push(name);};
+          const delay=ms=>new Promise(r=>setTimeout(r,ms));
+          let browser,page;
+          async function boot(p){await p.goto(URL,{waitUntil:'domcontentloaded',timeout:150000});await p.waitForFunction(()=>!!(window.GV&&window.__boot426&&window.__boot426().ready),null,{timeout:150000});await p.evaluate(()=>{document.getElementById('bNewGame').click();GV.setSpeed(0);GV.ai(false);});await p.waitForFunction(()=>{let hud=document.getElementById('hud'),more=document.getElementById('hudMore680');return document.documentElement.classList.contains('ui680')&&!!hud&&!!more&&getComputedStyle(hud).display!=='none';},null,{timeout:120000});}
+          async function openMore(p,touch){const sum=p.locator('#hudMore680 summary');if(touch)await sum.tap({timeout:35000});else await sum.click({timeout:35000});await p.waitForFunction(()=>document.getElementById('hudMore680').open);check(true,'native menu opened',await p.viewportSize());}
+          async function closed(p){return p.evaluate(()=>!document.getElementById('hudMore680').open);}
+          async function test(){
+            browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true});
+            observations.browser=browser.version();
+            const mobile=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+            await mobile.addInitScript(()=>{localStorage.setItem('glimmerville.v1.slot','3');localStorage.setItem('glimmerville.v1.snd','0');});
+            page=await mobile.newPage();page.setDefaultTimeout(40000);page.on('dialog',async dialog=>{observations.actions.push({dialog:dialog.type(),message:dialog.message().slice(0,200)});await dialog.dismiss();});
+            await boot(page);
+            const originalSelectors=['bRot','bMetro','bNew','bHelp'];
+            const info=await page.evaluate(()=>{
+              const o={viewport:innerWidth,slot:localStorage.getItem('glimmerville.v1.slot'),is680:document.documentElement.classList.contains('ui680'),originals:[],menu:{}};
+              for(const id of ['bRot','bMetro','bNew','bHelp']){const e=document.getElementById(id);o.originals.push({id,exists:!!e,display:e&&getComputedStyle(e).display});}
+              const e=document.getElementById('hudMore680'),r=e.getBoundingClientRect();o.menu={visible:getComputedStyle(e).display!=='none',rect:r.toJSON()};return o;
+            });
+            check(info.is680&&info.slot==='3'&&info.originals.every(o=>o.exists&&o.display==='none')&&info.menu.visible,'mobile only: original actions hidden while More present',info);
+            await shot(page,'390-closed');
+            await openMore(page,true);
+            let rects=await page.evaluate(()=>{
+              const panel=document.querySelector('#hudMore680 .hudMorePanel680'),pr=panel.getBoundingClientRect();
+              const acts=[...panel.querySelectorAll('[data-hud680]')].map(x=>{let r=x.getBoundingClientRect(),h=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return{id:x.dataset.hud680,label:x.textContent,disabled:x.disabled,rect:r.toJSON(),reachable:x===h||x.contains(h)}});
+              return{width:innerWidth,height:innerHeight,panel:pr.toJSON(),acts};
+            });
+            check(rects.acts.length===4&&rects.acts.every(a=>!a.disabled&&a.rect.width>=40&&a.rect.height>=40&&a.reachable)&&rects.panel.left>=0&&rects.panel.right<=rects.width+1&&rects.panel.top>=0&&rects.panel.bottom<=rects.height+1,'real mobile touch targets and panel inside viewport',rects);
+            await shot(page,'390-expanded');
+            await page.keyboard.press('Escape');check(await closed(page),'Escape closes more');
+            await openMore(page,true);
+            await page.mouse.click(250,430);check(await closed(page),'outside click closes more');
+            await openMore(page,true);
+            const focus=await page.evaluate(()=>document.activeElement?.outerHTML?.slice(0,200));check(!!focus,'focus data available',focus);
+            await page.locator('#hudMore680 summary').tap();check(await closed(page),'repeated tap toggles closed');
+            // Use actual browser touch events. Observe the existing old control's trusted routed click (no handler mocks).
+            await page.evaluate(()=>{window.__t680Routes={};for(const id of ['bRot','bMetro','bNew','bHelp'])document.getElementById(id).addEventListener('click',()=>window.__t680Routes[id]=(window.__t680Routes[id]||0)+1,{capture:true});});
+            for(const id of originalSelectors){
+              await openMore(page,true);
+              const button=page.locator('#hudMore680 [data-hud680="'+id+'"]');
+              await button.tap();
+              await delay(180);
+              const state=await page.evaluate(i=>({count:window.__t680Routes[i]||0,menuOpen:document.getElementById('hudMore680').open,infoVisible:document.getElementById('info')?.style.display,buttonText:document.getElementById(i)?.textContent}),id);
+              observations.actions.push({id,...state});
+              check(state.count===1&&!state.menuOpen,'real touch routes exactly once to existing original control '+id,state);
+              await shot(page,'390-after-'+id);
+              if(id==='bHelp'){const infoX=page.locator('#infoX');if(await infoX.isVisible())await infoX.click();}
+            }
+            for(const [w,h] of [[320,740],[360,844],[430,932],[844,390]]){
+              await page.setViewportSize({width:w,height:h});
+              await delay(250);
+              await openMore(page,true);
+              const layout=await page.evaluate(()=>{const p=document.querySelector('#hudMore680 .hudMorePanel680').getBoundingClientRect();return{width:innerWidth,height:innerHeight,x:p.x,right:p.right,y:p.y,bottom:p.bottom};});
+              check(layout.width===w&&layout.x>=0&&layout.right<=w+1&&layout.y>=0&&layout.bottom<=h+1,'more panel inside '+w+'x'+h,layout);
+              await shot(page,String(w)+'x'+String(h)+'-expanded');
+              await page.keyboard.press('Escape');check(await closed(page),'Escape closes more '+w);
+            }
+            for(const [w,h] of [[1024,768],[1440,900]]){
+              await page.setViewportSize({width:w,height:h});await delay(250);
+              const state=await page.evaluate(()=>({moreDisplay:getComputedStyle(document.getElementById('hudMore680')).display,visibleOriginals:['bRot','bMetro','bNew','bHelp'].map(id=>getComputedStyle(document.getElementById(id)).display!=='none')}));
+              check(state.moreDisplay==='none'&&state.visibleOriginals.every(Boolean),'desktop originals kept and more hidden '+w,state);
+              await shot(page,String(w)+'x'+String(h)+'-desktop');
+            }
+            const fallback=await mobile.newPage();await fallback.goto(URL+'?noT680=1',{waitUntil:'domcontentloaded',timeout:120000});await fallback.waitForFunction(()=>!!(window.GV&&window.__boot426?.().ready),null,{timeout:120000});
+            let cls=await fallback.evaluate(()=>document.documentElement.classList.contains('ui680'));check(!cls,'query noT680 restores original UI');await fallback.close();
+            const second=await mobile.newPage();await second.addInitScript(()=>{window.__noT680=true;});await second.goto(URL,{waitUntil:'domcontentloaded',timeout:120000});await second.waitForFunction(()=>!!(window.GV&&window.__boot426?.().ready),null,{timeout:120000});
+            cls=await second.evaluate(()=>document.documentElement.classList.contains('ui680'));check(!cls,'preload window noT680 restores original UI');await second.close();
+          }
+          test().then(()=>{observations.status='pass';}).catch(async e=>{observations.status='fail';observations.error=String(e&&e.stack||e);try{if(page)await shot(page,'failure');}catch(err){observations.failures.push(String(err));}process.exitCode=1;}).finally(async()=>{
+            fs.writeFileSync(OUT+'/t680-native.json',JSON.stringify(observations,null,2));
+            console.log('T680_NATIVE',JSON.stringify({status:observations.status,checks:observations.checks.length,actions:observations.actions,screenshots:observations.screenshots,error:observations.error}));
+            try{await browser?.close();}catch{}
+          });
+          JS
+          NODE_PATH="$RUNNER_TEMP/t680play/node_modules" node "$RUNNER_TEMP/t680-native.cjs"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: T680-native-a93a6984-real-interactions
+          path: evidence/
+          retention-days: 30
