@@ -5,7 +5,7 @@
  * git objects; the working tree must be byte-identical to those blobs and GITHUB_SHA, when
  * set, must be HEAD. GAME_VER (index.html) and APP_VER (sw.js) must each occur exactly once
  * and agree.
- * Previous release (R3): what https://game.lijiabao.uk/glimmertown/ serves now. The
+ * Previous release (R3): what https://lijiabao1998.github.io/glimmertown/ serves now. The
  * live bytes are un-namespaced and matched by git blob id against the first-parent history of
  * origin/main; PREV is the newest match that is an ancestor of HEAD (every match carries the same
  * seven blobs, so a runtime-neutral commit landing on main later does not move PREV off a branch's
@@ -25,7 +25,7 @@ const path = require('node:path');
 // ---- Strict literals (R7). Only hashes and versions are derived; these never are. ----
 const RUNTIME_FILES = Object.freeze(['index.html', 'sw.js', 'manifest.json', 'icon.svg',
   'icon-v1-192.png', 'icon-v1-512.png', 'icon-v1-maskable-512.png']);
-const PAGES_ORIGIN = 'https://game.lijiabao.uk';
+const PAGES_ORIGIN = 'https://lijiabao1998.github.io';
 const PAGES_PATH = '/glimmertown/';
 const PAGES_BASE = PAGES_ORIGIN + PAGES_PATH;
 const SAVE_NAMESPACE = 'glimmerville.main.v1';

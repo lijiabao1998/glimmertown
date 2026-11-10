@@ -46,7 +46,7 @@ export function options(args){
     assert(!out.upgradeFromMain,'upgrade mode requires the local raw-package server');
     const url=new URL(out.url);
     assert(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash,'published URL must be ordinary HTTPS without credentials/query/fragment');
-    assert.equal(url.origin,'https://game.lijiabao.uk','published origin must be the verified GlimmerTown GitHub Pages account');
+    assert.equal(url.origin,'https://lijiabao1998.github.io','published origin must be the verified GlimmerTown GitHub Pages account');
     assert(url.pathname===PROJECT,'published URL must end in /glimmertown/');out.url=url.href;
   }
   return out;

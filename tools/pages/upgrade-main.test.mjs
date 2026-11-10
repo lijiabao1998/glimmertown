@@ -40,7 +40,7 @@ const T602_LIVE_PACKAGE_SHA256={'index.html':'afa22141eade4c222d7cee48dcfb1ea815
 
 test('upgrade is explicit, local-only, and starts from the exact release the live Pages site serves',async t=>{
   assert.equal(options(['--upgrade-from-main']).upgradeFromMain,true);
-  for(const args of [['--upgrade-from-main','--upgrade-from-main'],['--upgrade-from-main','--url=https://game.lijiabao.uk/glimmertown/'],['--url=https://game.lijiabao.uk/glimmertown/','--upgrade-from-main']])assert.throws(()=>options(args));
+  for(const args of [['--upgrade-from-main','--upgrade-from-main'],['--upgrade-from-main','--url=https://lijiabao1998.github.io/glimmertown/'],['--url=https://lijiabao1998.github.io/glimmertown/','--upgrade-from-main']])assert.throws(()=>options(args));
   const {prev,plan}=await livePair();
   assert.equal(prev.current.commit,SOURCE_COMMIT);assert.deepEqual({...prev.current.sourcePins},{...PINS});assert.equal(prev.current.version,APP_VERSION);
   const found=identity.releaseAt(ROOT,prev.commit);
