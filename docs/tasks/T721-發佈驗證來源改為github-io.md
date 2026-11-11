@@ -47,12 +47,12 @@ T718 的反向，只動「來源」，路徑 `/glimmertown/` 不動。
 
 - [x] 改前基準：base（`38b8def`）上 `node tools/pages/release-identity.cjs --previous --json` 解出的上一版提交與七檔雜湊，記在施工紀錄。
 - [x] 紅源（切換前）：改後同一道指令 fail-closed，錯誤落在線上抓取的轉址，不是別處；輸出記在施工紀錄。
-- [ ] `node --test tools/pages/*.test.mjs`：測試數與改前相同、0 失敗。
+- [x] `node --test tools/pages/*.test.mjs`：測試數與改前相同、0 失敗。
 - [x] `published-main.mjs` 的 `options()`：`--url=https://lijiabao1998.github.io/glimmertown/` 收；`--url=https://game.lijiabao.uk/glimmertown/` 拒。
 - [x] `grep -rn "game.lijiabao.uk" tools/` 只剩 `published-main.test.mjs` 拒收清單那一處。
 - [x] 七個執行檔與 base 逐位相同（`git diff --stat 38b8def -- index.html sw.js manifest.json icon.svg icon-v1-192.png icon-v1-512.png icon-v1-maskable-512.png` 為空）。
 - [ ] 官方 CI（切換前）：scope 判 full 道、一張卡、沒有違規；validate（含 `verify.py`）、package、ratchet 與其他不靠線上來源的各道綠；pages-browser 紅在 R3 抓取。
-- [ ] 官方 CI（切換後，同一個 head）：pages-browser 綠、gate 綠；`--previous` 解出的上一版與改前基準是同一個提交、七檔雜湊相同。
+- [x] 官方 CI（切換後，同一個 head）：pages-browser 綠、gate 綠；`--previous` 解出的上一版與改前基準是同一個提交、七檔雜湊相同。
 - [ ] 合併後：main 那一輪 deploy 的 `page_url` 是 `https://lijiabao1998.github.io/glimmertown/`，verify-published 綠。
 
 ## 範圍外
@@ -93,9 +93,29 @@ T718 的反向，只動「來源」，路徑 `/glimmertown/` 不動。
 
 - 第 7 條寫「package 綠、pages-browser 紅」。實跑後發現 package 那一道跑的就是上面那套契約測試，其中四項會做真的 R3 線上抓取，所以**切換前 package 也會紅在同一處**。第 7 條照原文在切換前打不了勾。
 - 不放寬，改以第 8 條（切換後同一個 head 全綠）為準，並加一條更嚴的：
-  - [ ] 切換後官方 CI 的 package：契約測試回到 225 項、224 過、1 略、0 失敗。
+  - [x] 切換後官方 CI 的 package：契約測試回到 225 項、224 過、1 略、0 失敗。
+
+**更正二（同樣是第 7 條；原文不改，再記一筆）**
+
+- 切換前那一輪官方 CI（head `a1ad93f9`，run 42913407884）實際紅了五道，不只 package 與 pages-browser：browser 的 core／world／neighbors 三道也紅，日誌都是 `Release identity failed: Error: Live fetch failed after 6 tries: index.html: fetch failed`。它們經 release-correctness 解上一版，紅在同一個紅源。
+- 同一輪綠的：scope（full 道、一張卡、0 違規）、validate、approved-art-release、approved-fire-release、scene602、fp、frame、ratchet、port-t677、t717-evidence。gate 因上面五道而紅。沒有重跑、沒有合併。
+- 所以第 7 條照原文打不了勾（它寫 package 綠、只有 pages-browser 紅）。實際情況是：不靠線上來源的各道綠，靠線上來源的五道全部紅在 R3 抓取。
+
+**2026-11-11 切換（業主當天回「切換」）**
+
+- 使用者站 `lijiabao1998.github.io`：刪 `CNAME`、清掉 Pages 自訂網域（該倉庫提交 `aec6cfd`，13:37 +08:00）。`https://lijiabao1998.github.io/glimmertown/` 直接回 200，`gh api repos/lijiabao1998/glimmertown/pages` 的 `html_url` 變成這個網址。
+- 本機用改後的工具對真的線上再跑一次 `--previous`（不是模擬）：結束碼 0，上一版同樣是 `38b8defab13bea99efa72026b18bc19ca8762429`（v11.254），七檔 sha256 與改前基準相同。
+- **切換中途出過錯，照實記**：閘道接手 `game.lijiabao.uk` 的部署先失敗了（Cloudflare 回 `Hostname 'game.lijiabao.uk' already has externally managed DNS records`，舊的 DNS 紀錄沒有先刪）。13:37 到約 13:58 之間，`game.lijiabao.uk` 的網址回 404，卡面「切換順序」第 3 條（閘道原樣回 200）在這二十分鐘不成立。這段時間沒有別的 PR 在跑。
+- 刪掉那筆 DNS 紀錄、重新部署後，閘道接上。`game.lijiabao.uk/glimmertown/` 目前原樣回 200、不轉址；七檔各抓一次，sha256 與改前基準逐一相同（`index.html` 以瀏覽器標頭再抓一次也相同，沒有被插入內容）。
+- **官方 CI（切換後，同一個 head `a1ad93f9`，run 42967784904，由轉 ready 觸發，第 1 次嘗試）**：全部綠，gate 綠。
+  - package：契約測試 225 項，224 過、1 略、0 失敗。
+  - pages-browser：`MAIN_PAGES_UPGRADE_NOT_APPLICABLE`，`previousCommit` 是 `38b8defab13bea99efa72026b18bc19ca8762429`，與改前基準同一個提交。
+  - browser 三道、validate、ratchet、fp、frame 與其餘各道都綠。
+- Codex：轉 ready 觸發的審查在 `a1ad93f` 上跑完，沒有留下意見。
+- 本提交只補卡面與 CHANGELOG 的驗收欄（`.md`），工具與測試沒有再動。
 
 **還沒做的**
 
-- 契約測試「0 失敗」、官方 CI 兩輪（切換前、切換後）、合併後 main 那一輪：都等網域切換。
-- 網域切換本身等業主點頭。
+- 本提交推上去後的那一輪 CI 與 Codex 重審；之後照 `--premerge` 程序合併。
+- 合併後 main 那一輪的 deploy 與 verify-published（凍結驗收最後一條）。
+- 那一輪綠了之後，文化中心的閘道才把 `game.lijiabao.uk/glimmertown/` 改成轉址。
