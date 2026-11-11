@@ -53,7 +53,7 @@ T718 的反向，只動「來源」，路徑 `/glimmertown/` 不動。
 - [x] 七個執行檔與 base 逐位相同（`git diff --stat 38b8def -- index.html sw.js manifest.json icon.svg icon-v1-192.png icon-v1-512.png icon-v1-maskable-512.png` 為空）。
 - [ ] 官方 CI（切換前）：scope 判 full 道、一張卡、沒有違規；validate（含 `verify.py`）、package、ratchet 與其他不靠線上來源的各道綠；pages-browser 紅在 R3 抓取。
 - [x] 官方 CI（切換後，同一個 head）：pages-browser 綠、gate 綠；`--previous` 解出的上一版與改前基準是同一個提交、七檔雜湊相同。
-- [ ] 合併後：main 那一輪 deploy 的 `page_url` 是 `https://lijiabao1998.github.io/glimmertown/`，verify-published 綠。
+- [x] 合併後：main 那一輪 deploy 的 `page_url` 是 `https://lijiabao1998.github.io/glimmertown/`，verify-published 綠。
 
 ## 範圍外
 
@@ -114,8 +114,12 @@ T718 的反向，只動「來源」，路徑 `/glimmertown/` 不動。
 - Codex：轉 ready 觸發的審查在 `a1ad93f` 上跑完，沒有留下意見。
 - 本提交只補卡面與 CHANGELOG 的驗收欄（`.md`），工具與測試沒有再動。
 
-**還沒做的**
+**2026-11-11 收據：合併與 main 那一輪（Claude）**
 
-- 本提交推上去後的那一輪 CI 與 Codex 重審；之後照 `--premerge` 程序合併。
-- 合併後 main 那一輪的 deploy 與 verify-published（凍結驗收最後一條）。
-- 那一輪綠了之後，文化中心的閘道才把 `game.lijiabao.uk/glimmertown/` 改成轉址。
+- 補卡面的那一輪：head `c71a5fe`，run 42969759662 全綠。Codex 在 `c71a5fe` 重審完成，沒有意見。`python tools/session_audit.py --premerge 88` 放行（gate 綠、Codex 審過、沒有未回覆的 P0／P1）。
+- 合併：PR #88 以 merge commit `0ea9c324b` 合進 main（06:21:28Z），釘在驗過的 head `c71a5fee189495f12088282df0bdbfa514dbc9f8`。
+- main 那一輪：run 42971855942 全綠，gate、deploy、verify-published 都 success。verify-published 的 `PAGES_URL` 是 `https://lijiabao1998.github.io/glimmertown/`，結果 `MAIN_PAGES_REOPEN_PASS`（mode `published-https`，23 項檢查）。凍結驗收最後一條成立。
+- 切換順序第 5 條成立：切換到本卡合併之間，main 沒有別的合併。
+- 切換順序第 6 步已做：main 那一輪綠了之後，文化中心的閘道把 `game.lijiabao.uk/glimmertown/` 改成 301 到 `https://lijiabao.uk/games/glimmertown/play/`，路徑與參數照帶。舊網域上本遊戲的 service worker 由一支自我註銷的腳本接手，只清 `glimmerville-main-shell-` 開頭的快取。
+- 範圍外列的幾項沒有動：`index.html` 的 canonical 與 OG 仍寫 `game.lijiabao.uk`（現在會被轉址帶到新的遊玩網址）、`README.md` 的版本行與 Pages 連結。
+- 本卡到此結束。
