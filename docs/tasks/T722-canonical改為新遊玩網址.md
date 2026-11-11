@@ -32,9 +32,9 @@
 
 ## 凍結驗收（動手前寫好，之後不改鬆）
 
-- [ ] `git diff 2521513c -- index.html` 恰好三行有變：`canonical`、`og:url`、`GAME_VER`；`sw.js` 恰好一行（`APP_VER`）；其餘五個執行檔與 base 逐位相同。
-- [ ] `index.html` 行數與 base 相同（54812，LF 計數）。
-- [ ] `python tools/verify.py` ALL GREEN，PASS 數不少於 base（本機跑不了就以官方 CI 的 validate 與 ratchet 為準，並照實寫）。
+- [x] `git diff 2521513c -- index.html` 恰好三行有變：`canonical`、`og:url`、`GAME_VER`；`sw.js` 恰好一行（`APP_VER`）；其餘五個執行檔與 base 逐位相同。
+- [x] `index.html` 行數與 base 相同（54812，LF 計數）。
+- [x] `python tools/verify.py` ALL GREEN，PASS 數不少於 base（本機跑不了就以官方 CI 的 validate 與 ratchet 為準，並照實寫）。
 - [ ] 官方 CI：scope 判 full 道、一張卡、沒有違規；frame 綠（畫面零變）；fp 綠（像素指紋零變動）；pages-browser 的真升級（線上 11.254 → 本卡 11.255）通過；gate 綠。
 - [ ] 合併後：main 那一輪 deploy 與 verify-published 綠；`https://lijiabao1998.github.io/glimmertown/` 與 `https://lijiabao.uk/games/glimmertown/play/` 取回的 `index.html` 相同，canonical 是 `https://lijiabao.uk/games/glimmertown/play/`。
 
@@ -44,4 +44,13 @@
 
 ## 施工紀錄
 
-（施工後補）
+**2026-11-11（Claude）**
+
+- 卡面先推（`242e5048`，只有本卡），開草稿 PR #90。
+- 施工：`index.html` 第 12、18 行的網址換成 `https://lijiabao.uk/games/glimmertown/play/`；`python tools/bump.py 11.255`（輸出 `GAME_VER/APP_VER 11.254 -> 11.255`）；`docs/ARCH.md` 第 3 行版本號同步；CHANGELOG 一行。
+- 差異核對：`git diff 2521513c -- index.html` 三行（canonical、og:url、GAME_VER），`sw.js` 一行（APP_VER）；`index.html` 54812 行，與 base 相同；`manifest.json`、`icon.svg` 與三張 PNG 對 base 的 `git diff --stat` 為空。
+- `python tools/verify.py`（本機，Windows，Node v24.15.0）：`RESULT: ALL GREEN`。`suite green: PASS=12867`、`version in sync: 11.255`、六個種子哨兵相符、`CRLF=0`、ARCH 代碼地圖的錨點與行號相符。base 的 PASS 數本機沒有另跑，以官方 CI 的 ratchet 為準。
+
+**還沒做的**
+
+- 官方 CI（含 pages-browser 的真升級 11.254 → 11.255）、Codex 審查、合併，以及合併後 main 那一輪。
