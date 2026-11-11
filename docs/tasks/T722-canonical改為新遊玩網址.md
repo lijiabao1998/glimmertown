@@ -35,8 +35,8 @@
 - [x] `git diff 2521513c -- index.html` 恰好三行有變：`canonical`、`og:url`、`GAME_VER`；`sw.js` 恰好一行（`APP_VER`）；其餘五個執行檔與 base 逐位相同。
 - [x] `index.html` 行數與 base 相同（54812，LF 計數）。
 - [x] `python tools/verify.py` ALL GREEN，PASS 數不少於 base（本機跑不了就以官方 CI 的 validate 與 ratchet 為準，並照實寫）。
-- [ ] 官方 CI：scope 判 full 道、一張卡、沒有違規；frame 綠（畫面零變）；fp 綠（像素指紋零變動）；pages-browser 的真升級（線上 11.254 → 本卡 11.255）通過；gate 綠。
-- [ ] 合併後：main 那一輪 deploy 與 verify-published 綠；`https://lijiabao1998.github.io/glimmertown/` 與 `https://lijiabao.uk/games/glimmertown/play/` 取回的 `index.html` 相同，canonical 是 `https://lijiabao.uk/games/glimmertown/play/`。
+- [x] 官方 CI：scope 判 full 道、一張卡、沒有違規；frame 綠（畫面零變）；fp 綠（像素指紋零變動）；pages-browser 的真升級（線上 11.254 → 本卡 11.255）通過；gate 綠。
+- [x] 合併後：main 那一輪 deploy 與 verify-published 綠；`https://lijiabao1998.github.io/glimmertown/` 與 `https://lijiabao.uk/games/glimmertown/play/` 取回的 `index.html` 相同，canonical 是 `https://lijiabao.uk/games/glimmertown/play/`。
 
 ## 回滾
 
@@ -51,6 +51,12 @@
 - 差異核對：`git diff 2521513c -- index.html` 三行（canonical、og:url、GAME_VER），`sw.js` 一行（APP_VER）；`index.html` 54812 行，與 base 相同；`manifest.json`、`icon.svg` 與三張 PNG 對 base 的 `git diff --stat` 為空。
 - `python tools/verify.py`（本機，Windows，Node v24.15.0）：`RESULT: ALL GREEN`。`suite green: PASS=12867`、`version in sync: 11.255`、六個種子哨兵相符、`CRLF=0`、ARCH 代碼地圖的錨點與行號相符。base 的 PASS 數本機沒有另跑，以官方 CI 的 ratchet 為準。
 
-**還沒做的**
+**2026-11-11 收據：官方 CI、合併與 main 那一輪（Claude）**
 
-- 官方 CI（含 pages-browser 的真升級 11.254 → 11.255）、Codex 審查、合併，以及合併後 main 那一輪。
+- 官方 CI：head `ca4ec81`，run 43016229949（轉 ready 觸發，第 1 次嘗試）全綠，gate 綠。scope 判 full 道、一張卡、0 違規；frame 綠（畫面零變）、fp 綠、ratchet 綠。pages-browser 的真升級通過：`MAIN_PAGES_REOPEN_PASS`，mode `local-raw-package-upgrade`，32 項檢查（線上 11.254 → 本卡 11.255）。
+  - 同一個 head 還有一輪 run 43016190377（推送觸發），在轉 ready 時被新的一輪取消，PR 檢查列表上那一筆紅的 gate 是它，不是失敗後重跑。
+- Codex 在 `ca4ec81` 審查完成，沒有意見。`python tools/session_audit.py --premerge 90` 放行。
+- 合併：PR #90 以 merge commit `eadc3a35c` 合進 main（12:16:50Z），釘在驗過的 head `ca4ec81c7931dc7b106b573e183a2d11b76a3371`。
+- main 那一輪：run 43018970415 全綠，deploy 與 verify-published 都 success。verify-published：`MAIN_PAGES_REOPEN_PASS`，mode `published-https`，url `https://lijiabao1998.github.io/glimmertown/`，23 項檢查。
+- 線上核對：`https://lijiabao1998.github.io/glimmertown/` 與 `https://lijiabao.uk/games/glimmertown/play/` 取回的 `index.html` sha256 相同；canonical 與 og:url 都是 `https://lijiabao.uk/games/glimmertown/play/`；`sw.js` 的 APP_VER 是 11.255。
+- 本卡到此結束。
