@@ -2,8 +2,8 @@
 // Playwright + 本機 Chrome。用獨立 origin、槽 3 和遊戲的建造入口；只把造境橋注入測試回應。
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {chromium}=require('playwright');
-const [root,out,tag='after']=process.argv.slice(2);
-if(!root||!out)throw Error('node browser.cjs <遊戲資料夾> <輸出資料夾> [before|after]');
+const [root,out,tag='after',oldSaveFile]=process.argv.slice(2);
+if(!root||!out)throw Error('node browser.cjs <遊戲資料夾> <輸出資料夾> [before|after|url-off] [舊版測試存檔路徑]');
 function fixture(){
   window.railQA={
     setup(){
@@ -42,6 +42,13 @@ function fixture(){
     },
     toggle(disabled){window.__noT681=disabled;},
     canvasWidth(){return cvs.width;},
+    saveState(raw){
+      if(raw)localStorage.setItem(slotKey(3),raw);else GV.save();
+      if(!GV.load())throw Error('槽 3 讀檔失敗');
+      GV.save();const stored=localStorage.getItem(slotKey(3)),d=saveInflate(JSON.parse(stored));
+      const fields=['v','n','day','money','ter','rd','rl','rb','tr','bl'];
+      return {raw:stored,fields:Object.fromEntries(fields.map(k=>[k,d[k]])),mask:railDirs706(17,15,'rail').reduce((m,d)=>m|1<<d,0)};
+    },
     crossing(){
       const start=idx(18,16),finish=idx(18,11);
       GV.place('bus',18,16);GV.place('bus',18,11);busRoutes[0].stops=[start,finish];
@@ -113,8 +120,17 @@ async function main(){
     }
     const edit=await page.evaluate(()=>railQA.edit());
     if(tag==='after'){assert.notEqual(edit.linked,edit.removed,'拆除道岔');assert.equal(edit.linked,edit.restored,'復原道岔');assert.equal(edit.restored,edit.loaded,'存檔重載道岔');}
+    let priorSave;
+    if(oldSaveFile&&tag==='before'){
+      fs.writeFileSync(oldSaveFile,JSON.stringify(await page.evaluate(()=>railQA.saveState())));
+    }else if(oldSaveFile&&tag==='after'){
+      const old=JSON.parse(fs.readFileSync(oldSaveFile,'utf8'));
+      const loaded=await page.evaluate(data=>railQA.saveState(data),old.raw);
+      assert.deepEqual(loaded.fields,old.fields,'舊城市的地形、路軌、橋、建築、日數和資金往返一致');
+      assert.equal(loaded.mask,edit.linked,'舊檔按新版規則導出道岔');priorSave={fields:Object.keys(loaded.fields),mask:loaded.mask};
+    }
     assert.equal(edit.slot,'3');assert.deepEqual(errors,[]);
-    console.log(JSON.stringify({title:await page.title(),setup,state,edit,crossing,errors},null,2));
+    console.log(JSON.stringify({title:await page.title(),setup,state,edit,crossing,priorSave,errors},null,2));
   }finally{if(browser)await browser.close();server.close();}
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
