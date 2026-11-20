@@ -19604,3 +19604,7 @@ for(const [name675,file675,args675] of [
 
 /* T677 官方意見4373149554：只追加完整設備依賴守衛，原有斷言不動。 */
 {const r677=childProcess.spawnSync(process.execPath,[path.join(__dirname,'docs/tasks/t677-shots/check-watch-footprints.cjs')],{cwd:__dirname,encoding:'utf8',timeout:120000});let j677=null;try{j677=JSON.parse(r677.stdout);}catch{}assert(r677.status===0&&j677&&j677.status==='passed'&&j677.checks===25,'T677 G3 完整設備與兩段吊運占地、五布局凍結／修復、同30ID與時間、不廣域重掃、移除修復紅源：'+r677.stderr);}
+
+/* T681: replay both fleets through real turnout, station and terminus transitions. */
+{const rail681=childProcess.spawnSync(process.execPath,[path.join(__dirname,'docs/tasks/t681-shots/rail.cjs')],{cwd:__dirname,encoding:'utf8',timeout:60000});
+ assert(rail681.status===0,'T681 railway network, track geometry and live transitions: '+rail681.stderr);}
