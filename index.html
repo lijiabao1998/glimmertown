@@ -17295,7 +17295,8 @@ function updCars(dt){
     if(riotBlockedRoad(c.x,c.y))speed=0; // T118：暴亂封鎖路段車速歸零
     if(blizzard)speed*=BLIZZARD_SPEED_MULT; // T137：暴風雪/沙暴期間道路車速幾近癱瘓
     if(c.spd)speed*=c.spd; // T289：每車固定速度變異＝有機錯落車流
-    c.p+=dt*1.5*speed; // T289：基礎步進 1.4→1.5（整體車流略活躍）
+    const from=c.p;c.p+=dt*1.5*speed; // T289：基礎步進 1.4→1.5（整體車流略活躍）
+    c.p=crossingLimit681(c.x,c.y,c.x+DIRV[c.d][0],c.y+DIRV[c.d][1],from,c.p);
     if(c.p>=1){
       c.p-=1;
       c.x+=DIRV[c.d][0];c.y+=DIRV[c.d][1];
@@ -17479,7 +17480,8 @@ function updBuses(dt){
       continue;
     }
     const ct=T(idx(bus.x,bus.y));
-    bus.p+=dt*1.1*(ct&&ct.hw?1.6:1)*(ct&&ct.busLane?1.3:1); // 1.1 格/s，高速×1.6，公車道×1.3（T76）
+    const from=bus.p;bus.p+=dt*1.1*(ct&&ct.hw?1.6:1)*(ct&&ct.busLane?1.3:1); // 1.1 格/s，高速×1.6，公車道×1.3（T76）
+    if(bus.path[bus.pi+1])bus.p=crossingLimit681(bus.x,bus.y,...bus.path[bus.pi+1],from,bus.p);
     let guard=0;
     while(bus.p>=1&&guard++<64){
       const nxt=bus.path[bus.pi+1];
@@ -17491,6 +17493,7 @@ function updBuses(dt){
       bus.p-=1;
       bus.d=busDir(bus.x,bus.y,nxt[0],nxt[1]);
       bus.x=nxt[0];bus.y=nxt[1];bus.pi++;
+      if(bus.path[bus.pi+1])bus.p=crossingLimit681(bus.x,bus.y,...bus.path[bus.pi+1],0,bus.p);
       if(bus.pi>=bus.path.length-1){                 // 抵達目標站→停靠
         bus.path=null;bus.p=0;bus.wait=1;
         break;
@@ -17536,7 +17539,8 @@ function updRouteBuses(dt){
       continue;
     }
     const ct=T(idx(bus.x,bus.y));
-    bus.p+=dt*1.1*(ct&&ct.hw?1.6:1)*(ct&&ct.busLane?1.3:1);
+    const from=bus.p;bus.p+=dt*1.1*(ct&&ct.hw?1.6:1)*(ct&&ct.busLane?1.3:1);
+    if(bus.path[bus.pi+1])bus.p=crossingLimit681(bus.x,bus.y,...bus.path[bus.pi+1],from,bus.p);
     let guard=0;
     while(bus.p>=1&&guard++<64){
       const nxt=bus.path[bus.pi+1];
@@ -17546,6 +17550,7 @@ function updRouteBuses(dt){
       bus.p-=1;
       bus.d=busDir(bus.x,bus.y,nxt[0],nxt[1]);
       bus.x=nxt[0];bus.y=nxt[1];bus.pi++;
+      if(bus.path[bus.pi+1])bus.p=crossingLimit681(bus.x,bus.y,...bus.path[bus.pi+1],0,bus.p);
       if(bus.pi>=bus.path.length-1){                 // 抵達目標站→停靠
         bus.si=bus.nsi;bus.path=null;bus.p=0;bus.wait=.5;
         break;
@@ -17733,11 +17738,11 @@ function railOption707(id){
   if(flags[id]===undefined)flags[id]=new RegExp('(?:^|[?&])noT'+id+'(?:=1)?(?:&|$)').test(typeof location==='undefined'?'':location.search);
   return !flags[id]&&!window['__noT'+id];
 }
-function t707On(){return railOption707(707);}
-function t681On(){return railOption707(681);}
+function t707On(){if(t707On.off===undefined){const q=(typeof location!=='undefined'&&location.search)||'';t707On.off=/(?:^|[?&])noT707(?:=1)?(?:&|$)/.test(q);}return !window.__noT707&&!t707On.off;}
+function t681On(){if(t681On.off===undefined){const q=(typeof location!=='undefined'&&location.search)||'';t681On.off=/(?:^|[?&])noT681(?:=1)?(?:&|$)/.test(q);}return !window.__noT681&&!t681On.off;}
 /* T681：從兩端看同一條邊，得到同一答案。橫跨兩條至少三格長的並排直軌才可能是多出來的橫檔；
    外側接進來的支線保留穿越道岔。在三股以上的密集線束，比較共用直段長度，正方形平手沿東西軸。 */
-function parallelRung707(x,y,d,key){
+function parallelRung707(x,y,d,key,findSwitch=false){
   const [ax,ay]=DIRV[d],bx=-ay,by=ax,nx=x+ax,ny=y+ay;
   const has=(xx,yy)=>inMap(xx,yy)&&T(idx(xx,yy))[key];
   const paired=i=>has(x+i*bx,y+i*by)&&has(nx+i*bx,ny+i*by);
@@ -17745,7 +17750,8 @@ function parallelRung707(x,y,d,key){
   if(!(left&&right)&&!(left&&paired(-2))&&!(right&&paired(2)))return false;
   // 有一格真正向外伸出的接線（非另一條同向股道），就保留這個橫渡。
   const stem=(xx,yy)=>has(xx,yy)&&!has(xx+bx,yy+by)&&!has(xx-bx,yy-by);
-  if(stem(x-ax,y-ay)||stem(nx+ax,ny+ay))return false;
+  if(stem(x-ax,y-ay)||stem(nx+ax,ny+ay))return findSwitch;
+  if(findSwitch)return false;
   if(!has(x-ax,y-ay)&&!has(nx+ax,ny+ay))return true;
   let cross=1,along=2;
   for(const sign of [-1,1]){
@@ -17765,8 +17771,11 @@ function stationSides707(x,y,key){
   }
   return sides;
 }
-function branch707(c,choices,incoming){
-  if(choices.length===3)return incoming; // 十字菱形交叉直通，三岔才轉轍。
+function slipJunction707(x,y,key){
+  return [0,1,2,3].some(d=>parallelRung707(x,y,d,key,true));
+}
+function branch707(c,choices,incoming,x,y,key){
+  if(choices.length===3&&!slipJunction707(x,y,key))return incoming; // 正交菱形直通，雙線橫渡允許轉轍。
   return choices[((c.switchPass||0)+(c.pt||0))%choices.length];
 }
 function canDepart707(c,key){
@@ -17840,14 +17849,16 @@ function bakeTrain707(pt,heading){
   const angled=heading!==undefined,tram=pt===2,key=angled?2+32*pt+heading:pt?1:0;
   if(TRAIN707_CACHE[key])return TRAIN707_CACHE[key];
   const K=tram?{cabH:5,midH:5,nose:2,noseH:3,body:'#b6d4ca',band:'#267f67',roof:'#d7dfd5',skirt:'#414f51',glass:'#294747',lit:'#ffe5a2'}:TRAIN707_KINDS[pt?1:0];
-  const W=36,H=28,OX=18,OY=19,LH=tram?4:5,WD=1;
+  const W=36,H=28,OX=18,OY=19,LH=5,WD=1;
+  const bodyLength=tram?4:LH;
   // 車身沿實際切線投影，屋頂與車窗保持鉛直。沿正交四向保留批准的原車圖。
   const angle=(heading||0)*Math.PI/16,dx=Math.sin(angle),dy=-Math.cos(angle);
   const noseSign=dx+dy>1e-8?-1:1,sideSign=dx-dy>=0?1:-1;
   const ux=2*(dx-dy)*noseSign,uy=(dx+dy)*noseSign,vx=-2*(dx+dy)*sideSign,vy=(dx-dy)*sideSign;
-  const P=angled?(u,v,z)=>[Math.round(OX+ux*u+vx*v),Math.round(OY+uy*u+vy*v-z)]:(u,v,z)=>[OX+2*u+2*v,OY-u+v-z];
+  const P=(u,v,z)=>[OX+2*u+2*v,OY-u+v-z];
+  const project=angled?(u,v,z)=>[Math.round(OX+ux*u+vx*v),Math.round(OY+uy*u+vy*v-z)]:P;
   const mir=src=>{const[c,g]=cv(W,H);g.translate(W,0);g.scale(-1,1);g.drawImage(src,0,0);return c;};
-  const one=(nose,h)=>{                                                  // nose：+1 車鼻在 +u（右上）、-1 在 -u（左下）、0＝中間車
+  const one=(nose,h,P=project,LH=bodyLength)=>{                          // nose：+1 車鼻在 +u（右上）、-1 在 -u（左下）、0＝中間車
     const[c,g]=cv(W,H),[nc,ng]=cv(W,H),poly=(q,col,gg)=>lotPoly574(gg||g,q,col);
     const t=u=>{if(!nose)return 0;const d=nose>0?u-(LH-K.nose):(K.nose-LH)-u;return Math.max(0,Math.min(1,d/K.nose));};
     const hz=u=>Math.round(h-(h-K.noseH)*t(u)*t(u));                     // 車鼻往下彎（整數高度）
@@ -17912,29 +17923,29 @@ function routePose681(car,back,history,key){
   const before=point(cell-1);let leave;
   if(cell===1){
     const options=inMap(next[0],next[1])?railDirs706(next[0],next[1],key).filter(d=>d!==((car.d+2)&3)):[];
-    leave=options.length?branch707(car,options,car.d):car.d;
+    leave=options.length?branch707(car,options,car.d,next[0],next[1],key):car.d;
   }else leave=dir707(at,point(cell+1));
   const enter=before?dir707(before,at):leave;
   // 剛出車沒有足夠的歷史路徑時，在最後一個真實軌心收住車尾。
   const q=trackSection681(enter,leave,!before&&frac<0?0:frac);
   return {fx:at[0]+q.x,fy:at[1]+q.y,heading:(Math.round(Math.atan2(q.vx,-q.vy)*16/Math.PI)+32)%32};
 }
-function railPaths681(mask){
+function railPaths681(mask,slip=false){
   const ds=[0,1,2,3].filter(d=>mask&(1<<d));
   if(ds.length<2){const d=ds.length?ds[0]:0;return [[d,d,ds.length?-.07:-.14,ds.length?.5:.14]];}
-  if(ds.length===4)return [[0,0,-.5,.5],[1,1,-.5,.5]];
+  if(ds.length===4&&!slip)return [[0,0,-.5,.5],[1,1,-.5,.5]];
   const paths=[];
   for(let i=0;i<ds.length;i++)for(let j=i+1;j<ds.length;j++)paths.push([(ds[i]+2)&3,ds[j],-.5,.5]);
   return paths;
 }
-function bakeTrack681(kind,mask){
-  const cache=bakeTrack681.cache||(bakeTrack681.cache=new Map()),key=kind+mask;
+function bakeTrack681(kind,mask,slip=false){
+  const cache=bakeTrack681.cache||(bakeTrack681.cache=new Map()),key=kind+mask+(slip?'_slip':'');
   if(cache.has(key))return cache.get(key);
   const [img,g]=cv(64,48),tram=kind.startsWith('tram'),bridge=kind.endsWith('Bridge'),street=kind.endsWith('Street');
   const P=(x,y,h=0)=>[32+32*(x-y),19+16*(x+y)-h];
   const poly=(pts,color)=>{g.fillStyle=color;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();};
-  const paths=railPaths681(mask).map(([a,b,lo,hi])=>{
-    const n=Math.max(2,Math.ceil((hi-lo)*32)),pts=[];
+  const paths=railPaths681(mask,slip).map(([a,b,lo,hi])=>{
+    const span=hi-lo,n=Math.max(2,Math.ceil(span*32)),pts=[];
     for(let i=0;i<=n;i++)pts.push(trackSection681(a,b,lo+(hi-lo)*i/n));
     return pts;
   });
@@ -17961,7 +17972,7 @@ function bakeTrack681(kind,mask){
     ribbon(u-.024,u+.024,-.7,tram||street?'#43494c':'#555452');
     ribbon(u-.016,u+.016,.32,'#e3e3d9');
   }
-  if(paths.length===3){
+  if(paths.length>=3){
     const [px,py]=P(.24,.22);g.fillStyle='#424b4b';g.fillRect(px-3,py-2,6,3);
     g.fillStyle='#d5b25d';g.fillRect(px-2,py-3,4,1);
   }
@@ -18002,6 +18013,35 @@ function railFurniture681(type,d){
 function stationNear707(x,y){ // 與車站（k17／k55）相鄰的軌道格＝停靠位
   for(let d=0;d<4;d++){const nx=x+DIRV[d][0],ny=y+DIRV[d][1];if(!inMap(nx,ny))continue;const b=T(idx(nx,ny)).bld;if(!b)continue;const r=b.ref?T(idx(b.ref[0],b.ref[1])).bld:b;if(r&&(r.k===17||r.k===55))return true;}
   return false;
+}
+function warningBlocks681(fleet,kind){
+  const covered=occupancy707(fleet);
+  for(const c of fleet){
+    const nx=c.x+DIRV[c.d][0],ny=c.y+DIRV[c.d][1];
+    if(!c.rev707&&inMap(nx,ny)&&T(idx(nx,ny))[kind])covered.set(idx(nx,ny),true);
+  }
+  return covered;
+}
+function crossingAxis681(mask,road){
+  return mask===5&&(road&10)?1:mask===10&&(road&5)?0:-1;
+}
+function trackMask681(x,y,kind){
+  let mask=0;for(const d of railDirs706(x,y,kind))mask|=1<<d;
+  return mask;
+}
+function crossingLimit681(x,y,nx,ny,from,to){
+  // 車頭已通過停止線就放行清空路口。其餘車輛可行至停止線，直到整列車尾離開。
+  if(from>.40||to<.40||!inMap(nx,ny))return to;
+  const tile=T(idx(nx,ny));
+  if(!tile.road||(!tile.rail&&!tile.tram)||!t681On()||!t706On()||!t707On())return to;
+  const axis=nx===x?0:1;
+  for(const kind of ['rail','tram']){
+    const fleet=kind==='rail'?trains:tramCars;
+    if(!tile[kind]||!fleet.length||tile[kind+'Bridge'])continue;
+    const mask=trackMask681(nx,ny,kind);
+    if(crossingAxis681(mask,tile.mask)===axis&&warningBlocks681(fleet,kind).has(idx(nx,ny)))return .40;
+  }
+  return to;
 }
 function reverse707(c){ // 推拉折返：新車頭＝原本最後一節的位置，往遠離原車頭的方向走；新的最後一節正好落在原車頭的位置
   const P=c.tram681?tramPath707(c):trainPath707(c),oldD=c.d,oldP=c.p;let s=c.tram681?.52:(CARS707-1)*SP707;
@@ -18079,29 +18119,32 @@ function updTrains(dt){
     if(!inMap(c.x,c.y)||!T(idx(c.x,c.y)).rail){trains.splice(i,1);continue;}
     const ds=t706On()?railDirs706(c.x,c.y,'rail'):railDirs(c.x,c.y);if(!ds.length){trains.splice(i,1);continue;} // T706：只走鐵路，接輕軌處當線尾折返
     const rev=(c.d+2)%4;const fwd=ds.filter(d=>d!==rev);c.d=fwd.length?fwd[vri(fwd.length)]:rev;
-    if(on707&&railOption707(681)&&fwd.length>1){c.d=branch707(c,fwd,(rev+2)&3);c.switchPass=(c.switchPass||0)+1;}
+    if(on707&&railOption707(681)&&fwd.length>1){c.d=branch707(c,fwd,(rev+2)&3,c.x,c.y,'rail');c.switchPass=(c.switchPass||0)+1;}
     if(on707)arrive707(c,fwd.length,rev);
   }
   if(trains.length>target)trains.length=target;
+}
+function tramPorts707(si){
+  const x=si%N,y=(si/N)|0,b=T(si).bld;
+  return (b.lot574&&lotPorts574(x,y,actualLot574(b),'tram'))||DIRV.map(([dx,dy])=>{
+    const nx=x+dx,ny=y+dy;return inMap(nx,ny)&&T(idx(nx,ny)).tram?[nx,ny]:null;
+  });
 }
 function updTrams(dt){
   const service=t706On()&&t707On()&&railOption707(681);
   const sts=listBldK(21);
   const target=sts.length>=2?Math.min(4,sts.length):0;
   while(tramCars.length<target){
-    const si=sts[vri(sts.length)],x=si%N,y=(si/N)|0;
-    const ds=[];                                             // T65：仿 T63 FIX-F，站牌本身無 tram 旗標，不可用 railDirs(x,y)（其首行要求自身即帶 tram 才回傳鄰邊，站牌恆回空陣列致電車永不生成）；改為直接掃描站牌四鄰的 tram 格
-    const ports574=T(si).bld.lot574?lotPorts574(x,y,actualLot574(T(si).bld),'tram'):null;
-    if(ports574){for(let d=0;d<4;d++)if(ports574[d])ds.push(d);}else{
-    if(inMap(x,y-1)&&T(idx(x,y-1)).tram)ds.push(0);
-    if(inMap(x+1,y)&&T(idx(x+1,y)).tram)ds.push(1);
-    if(inMap(x,y+1)&&T(idx(x,y+1)).tram)ds.push(2);
-    if(inMap(x-1,y)&&T(idx(x-1,y)).tram)ds.push(3);
+    const first=vri(sts.length),occupied=service?occupancy707(tramCars):null;
+    let ports,ds;
+    // 從抽到的站依序找可用月台；當幀有空站即發車，不在已有車身的位置疊車。
+    for(let n=0;n<(service?sts.length:1);n++){
+      ports=tramPorts707(sts[(first+n)%sts.length]);
+      ds=[0,1,2,3].filter(d=>ports[d]&&(!occupied||!occupied.has(idx(...ports[d]))));
+      if(ds.length)break;
     }
     if(!ds.length)break;
-    const d0=ds[vri(ds.length)];
-    const tx1=ports574?ports574[d0][0]:x+DIRV[d0][0],ty1=ports574?ports574[d0][1]:y+DIRV[d0][1]; // T706：先算出生成格，好面向軌道
-    if(service&&occupancy707(tramCars).has(idx(tx1,ty1)))break;
+    const d0=ds[vri(ds.length)],[tx1,ty1]=ports[d0];
     tramCars.push({x:tx1,y:ty1,d:t706On()?spawnDir706(tx1,ty1,d0,'tram'):d0,p:0}); // T574：新月台可從任一側軌道出車，仍只用既有兩次 vri
     if(tramCars.length>=target)break;
   }
@@ -18126,7 +18169,7 @@ function updTrams(dt){
     const ds=t706On()?railDirs706(c.x,c.y,'tram'):railDirs(c.x,c.y);if(!ds.length){tramCars.splice(i,1);continue;} // T706：只走輕軌
     const rev=(c.d+2)%4;const fwd=ds.filter(d=>d!==rev);c.d=fwd.length?fwd[vri(fwd.length)]:rev;
     if(service){
-      if(fwd.length>1){c.d=branch707(c,fwd,(rev+2)&3);c.switchPass=(c.switchPass||0)+1;}
+      if(fwd.length>1){c.d=branch707(c,fwd,(rev+2)&3,c.x,c.y,'tram');c.switchPass=(c.switchPass||0)+1;}
       if(!fwd.length){c.d=(rev+2)&3;c.p=0;c.v=0;c.wait=1.2;c.rev707=1;}
       else{
         const at=!!stationSides707(c.x,c.y,'tram');
@@ -19037,8 +19080,8 @@ function draw(dt){
       if(!vis(sx,sy))continue;
       const t=T(idx(x,y));
       const rm=rotMask(t.mask),rwm=rotMask(t.wm),rem=rotMask(t.em||0);
-      const trackMask=(key,raw)=>railWorks&&t[key]?rotMask(railDirs706(x,y,key).reduce((m,d)=>m|(1<<d),0)):rotMask(raw||0);
-      const rrm=trackMask('rail',t.railMask),rtm=trackMask('tram',t.tramMask);
+      const rrm=rotMask(railWorks&&t.rail?trackMask681(x,y,'rail'):t.railMask||0);
+      const rtm=rotMask(railWorks&&t.tram?trackMask681(x,y,'tram'):t.tramMask||0);
       const vp388=w2v(x,y);if(vp388[0]===N-1||vp388[1]===N-1)gc.drawImage(SPR.cliff,sx,sy,64*z,56*z); // T388：外緣懸崖改 view 空間判邊（rot=2 崖畫遠端近端裸空的病灶）；r=0 時 w2v=identity 布林逐位恆等
       if(lodFar){ // T107：z<1 地面退化為實色菱形（略去 speck 細沙紋理），沿用同一菱形頂點密拼、不留縫
         gc.fillStyle= t.t===0?'#3671b6' : t.t===1?(win?'#e4e2d8':'#d9c689') : (win?'#e8eef2':sea===1?'#8fce5e':sea===2?'#b8935a':(t.el?'#8aba58':'#74b258')); // T136：LOD 遠景實色地面依季，春季（sea===0）與改動前同一分支表達式
@@ -19288,9 +19331,9 @@ function draw(dt){
           if(!t[kind])continue;
           const m=kind==='rail'?rrm:rtm,bridge=kind==='rail'?t.railBridge:t.tramBridge;
           const surface=kind+(bridge?'Bridge':t.road?'Street':'');
-          gc.drawImage(bakeTrack681(surface,m),sx,sy-3*z,64*z,48*z);
-          if(!bridge&&t.road&&((m===5&&(rm&10))||(m===10&&(rm&5))))
-            crossingTiles681.push({x,y,kind,axis:m===5?1:0});
+          gc.drawImage(bakeTrack681(surface,m,m===15&&slipJunction707(x,y,kind)),sx,sy-3*z,64*z,48*z);
+          const axis=!bridge&&t.road?crossingAxis681(m,rm):-1;
+          if(axis>=0)crossingTiles681.push({x,y,kind,axis});
           if(!t.road&&!bridge){const sides=rotMask(stationSides707(x,y,kind));
             for(let d=0;d<4;d++)if((sides&(1<<d))&&!(m&(1<<d))&&(m&(d%2?5:10)))
               gc.drawImage(railFurniture681('platform',d),sx,sy-3*z,64*z,48*z);}
@@ -19584,12 +19627,7 @@ function draw(dt){
     const busy={};
     for(const cr of crossingTiles681){
       if(!busy[cr.kind]){
-        const fleet=cr.kind==='tram'?tramCars:trains,covered=occupancy707(fleet);
-        for(const c of fleet){
-          const nx=c.x+DIRV[c.d][0],ny=c.y+DIRV[c.d][1];
-          if(!c.rev707&&inMap(nx,ny)&&T(idx(nx,ny))[cr.kind])covered.set(idx(nx,ny),true);
-        }
-        busy[cr.kind]=covered;
+        busy[cr.kind]=warningBlocks681(cr.kind==='tram'?tramCars:trains,cr.kind);
       }
       objs.push({dep:viewDep(cr.x,cr.y)+.42,cross681:cr,closed:busy[cr.kind].has(idx(cr.x,cr.y))});
     }
@@ -19608,7 +19646,8 @@ function draw(dt){
       const fx=pose?pose.fx:tr.x+DIRV[tr.d][0]*(tr.p-back), fy=pose?pose.fy:tr.y+DIRV[tr.d][1]*(tr.p-back);
       const _iso=isoW2V((fx-fy)*32,(fx+fy)*16+16); const wx=_iso[0], wy=_iso[1]; // T367
       if(!q707){objs.push({dep:viewDep(fx,fy)+.01,train:tr,carIdx:ci,wx,wy,td:tr.d});continue;}
-      objs.push({dep:viewDep(fx,fy)+.01,train:tr,carIdx:ci,wx,wy,td:q707.td,loco707:q707.loco,tail707:q707.tail,c707:{ci,d:track?Math.round(pose.heading/8)&3:q707.d},heading681:track?pose.heading:null});
+      objs.push({dep:viewDep(fx,fy)+.01,train:tr,carIdx:ci,wx,wy,td:q707.td,loco707:q707.loco,tail707:q707.tail,c707:{ci,d:q707.d}});
+      if(track){const car=objs[objs.length-1];car.heading681=pose.heading;car.c707.d=Math.round(pose.heading/8)&3;}
     }
   }
   for(const sh of cargoShips){                            // 貨船（T64）：同小車/火車位置內插公式，沿水面 t===0 緩動
@@ -24897,6 +24936,10 @@ function showHelp(){
       {k:'查看細節',v:'點擊任何建築',u:'顯示數據表'},
       {k:'小地圖圖層',v:'🏭 鈕循環',u:'地價/污染/壅堵/犯罪…'},
       {k:'地鐵路線',v:'🚇 鈕開關',u:'預設關閉'},
+      ...(t681On()&&t706On()&&t707On()?[
+        {k:'平行鐵路／輕軌',v:'兩排直軌各走各線',u:'沿同一方向並鋪至少三格'},
+        {k:'道岔與平交道',v:'向雙線外側接一段支線可換線',u:'道路橫穿直軌會設平交道'},
+      ]:[]),
       {k:'統計分頁',v:'🏙 城市／🔬 科技／📦 流向／📋 委託',u:'📊 面板頂部'}, /* T393 */
       {k:'流向圖層',v:'📦 流向頁內開關',u:'主畫布疊加貨運／通勤流線'}, /* T393←T384b */
       {k:'拆除 Lv2+',v:'需點兩次確認',u:'防誤拆'},
@@ -54021,8 +54064,10 @@ window.GV={
     const ids=s=>[...s].sort((a,b)=>a-b);
     try{
       art677(emit);
-      for(const k of ['rail','tram','railBridge','tramBridge','railStreet','tramStreet'])
+      for(const k of ['rail','tram','railBridge','tramBridge','railStreet','tramStreet']){
         for(let m=0;m<16;m++)emit('rail681',k+'_'+m,{img:bakeTrack681(k,m)});
+        emit('rail681',k+'_15_slip',{img:bakeTrack681(k,15,true)});
+      }
       for(const k of ['open','closed','platform'])for(let d=0;d<(k==='platform'?4:2);d++)
         emit('rail681',k+'_'+d,{img:railFurniture681(k,d)});
       for(let pt=0;pt<3;pt++)for(let h=0;h<32;h++)if(pt===2||h%8){
