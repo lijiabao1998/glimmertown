@@ -1,4 +1,5 @@
 # CHANGELOG — 每完成一張任務卡追加一行
+2026-11-21 | T682 | 手機教學獨立留位。建設、城市與地圖按三級選單操作，常用分類、縮放、存檔及檢視仍可直接點，港區從市政選單進入。 | 驗收: GPT (Codex) 施工，未經第三方覆核。
 2026-11-20 | T681 | 鐵路與輕軌共用彎道與道岔，分隔平行線，補全站旁月台、平交道與橋上鋼軌，修正線尾切換遺失列車。 | 驗收: GPT (Codex) 施工，未經第三方覆核。
 2026-11-11 | T722 | index.html 的 canonical 與 og:url 由 game.lijiabao.uk/glimmertown/ 改為新的遊玩網址 lijiabao.uk/games/glimmertown/play/（T721 範圍外留下的一項；舊網址已轉址過去）。只動 <head> 兩行，畫面、玩法、美術、腳本、存檔零變動；og:image 不動。v11.255，ARCH 已同步。 | 驗收:Claude 自檢，逐行核對差異（index.html 三行、sw.js 一行、行數不變、其餘五個執行檔逐位相同）；官方 CI 以本 PR 為準；未經第三方覆核，如實聲明
 2026-11-11 | T721 | 發佈驗證來源由 game.lijiabao.uk 改為 lijiabao1998.github.io（T718 的反向，只換來源字面量，路徑 /glimmertown/ 不動）：release-identity 的 PAGES_ORIGIN、published-main 的 --url 來源斷言與四份契約測試，拒收清單加舊來源；七個執行檔不動、不 bump。配合業主把遊戲站收回 lijiabao.uk：使用者站拿掉自訂網域之後 CI 才會綠，切換前靠線上來源的各道紅在 R3 線上抓取（不跟轉址），屬預期。 | 驗收:Claude 自檢，本機實跑：改前基準、切換前紅源、契約測試 225 項（改前 224 過 1 略；改後切換前 4 項紅在同一處）；2026-11-11 網域切換後同一個 head 的官方 CI 全綠（run 42967784904，gate 綠，package 224 過 1 略 0 失敗，上一版同一提交）；切換前那一輪實際紅五道（多出 browser 三道，卡面已更正）；合併後 main 的 deploy／verify-published 尚未跑；未經第三方覆核，如實聲明

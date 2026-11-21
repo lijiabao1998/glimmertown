@@ -612,6 +612,121 @@ html.noT428 #start .settingsGrid{min-width:auto;width:auto;max-width:420px;grid-
   html.ui680 #hudMore680:not([open]) .hudMorePanel680,html.ui680 #hudMore680:not([open]) .hudMoreDismiss680{display:none}
   html.ui680 #hudMore680 .hbtn[data-hud680]{min-width:0;min-height:52px;padding:8px 4px;white-space:nowrap}
 }
+/* T682 手機指揮台。教學、彈層與底座各佔一段，小地圖與港區共用教學下方的空間。 */
+#dock682,#sheet682,#shade682{display:none}
+@media(max-width:899px){
+  html.ui682{--ink682:#132c2a;--paper682:#f8f5e9;--mint682:#bce8d1;--muted682:#adc5b9;
+    --line682:#3b5650;--edge682:max(8px,env(safe-area-inset-left));--end682:max(8px,env(safe-area-inset-right));
+    --foot682:max(8px,env(safe-area-inset-bottom));--hint682:0px;--base682:108px;
+    --clear682:calc(var(--hud-h,54px) + var(--hint682) + 14px);--below682:calc(var(--foot682) + var(--base682) + 6px)}
+  html.ui682 #hud{flex-wrap:nowrap;gap:0;padding:env(safe-area-inset-top) var(--end682) 0 var(--edge682);min-height:52px;
+    background:#112724;color:#e5f3e9;border:0;border-bottom:1px solid #466052;box-shadow:0 2px 8px #14201e35}
+  html.ui682 #hud :is(.spacer,#rci,#hudMore680,.chip,.hbtn){display:none}
+  html.ui682 #hud .hudGrp552{display:contents}
+  html.ui682 #hud :is(#money,#pop,#date,#bSpeed,#bSave){display:flex;min-height:48px;min-width:44px;align-items:center;justify-content:center;
+    padding:2px 5px;background:transparent;border:0;box-shadow:none;border-radius:5px;color:#edf4ea}
+  html.ui682 #hud :is(#money,#pop){display:grid;align-content:center;justify-content:start;gap:0;font-size:0;line-height:0}
+  html.ui682 #hud :is(#money,#pop)::before{font-size:10px;line-height:14px;color:var(--muted682);font-weight:600;letter-spacing:.08em}
+  html.ui682 #money::before{content:'財政'}html.ui682 #pop::before{content:'人口'}
+  html.ui682 #hud .chip b{font:700 14px/18px system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#ecf4e8}
+  html.ui682 #hud #money b{color:#ffe6a1}
+  html.ui682 #hud :is(#money,#pop) b{max-width:24vw;overflow:hidden;text-overflow:ellipsis}
+  html.ui682 #hud #date{flex:1;min-width:0;white-space:normal;text-align:center;font-size:11px;line-height:15px;font-weight:600}
+  html.ui682 #hud #bSpeed{font:650 12px/1 system-ui,sans-serif;color:var(--mint682)}
+  html.ui682 #hud #bSave{font-size:0}
+  html.ui682 #bSave::before{content:'存檔';display:grid;place-items:center;padding:4px 6px;border:1px solid var(--line682);border-radius:6px;font:600 11px/18px system-ui,sans-serif}
+  html.ui682 #hint{top:calc(var(--hud-h,52px) + 6px)!important;left:var(--edge682);right:var(--end682);max-width:540px;
+    transform:none;z-index:34;gap:3px;padding:0 0 0 12px;border:1px solid #e2d6af;border-left:4px solid #c98c31;border-radius:10px;
+    color:#26372c;background:var(--paper682);box-shadow:0 3px 12px #112a2440;align-items:center}
+  html.ui682 #hintTxt{flex:1;min-width:0;padding:5px 0 6px;font-size:13px;font-weight:650;line-height:1.4}
+  html.ui682 #hintTxt::before{content:'新手引導';display:block;font-size:10px;line-height:14px;letter-spacing:.12em;color:#795422}
+  html.ui682 #hintX{flex:0 0 44px;min-height:44px;color:#40574c;font-size:17px;align-self:stretch}
+  html.ui682 #dock682,html.ui682 #sheet682{position:fixed;left:var(--edge682);right:var(--end682);max-width:540px;margin-inline:auto;
+    border:1px solid var(--line682);box-shadow:0 5px 24px #0b1d2850;font:600 13px/1.35 system-ui,sans-serif}
+  html.ui682 #dock682{display:block;bottom:var(--foot682);z-index:33;background:var(--ink682);color:#e4f2e9;border-radius:16px;padding:3px 5px 5px}
+  html.ui682 #dock682 button,html.ui682 #sheet682 button{font-family:inherit;cursor:pointer}
+  html.ui682 :is(#dock682,#sheet682,#hud,#hint) :focus-visible{outline:3px solid #cc9638;outline-offset:-3px}
+  html.ui682 #rail682{display:flex;align-items:center;min-height:44px;gap:3px;border-bottom:1px solid var(--line682)}
+  html.ui682 #railCats682{min-width:0;flex:1}
+  html.ui682 #rail682 #toolcats{position:static;display:flex;flex-flow:row nowrap;align-items:center;gap:0;max-width:100%;width:auto;transform:none;
+    padding:0;background:none;border:0;box-shadow:none;border-radius:0;touch-action:pan-x}
+  html.ui682 #rail682 #toolcats button{min-height:44px;min-width:44px;flex-shrink:0;padding:0 8px;border:0;border-radius:4px;box-shadow:none;background:none;color:#c2d8cc;font-size:12px}
+  html.ui682 #rail682 #toolcats button.on{color:#fff2bb;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+  html.ui682 #rail682 #zoomer{position:static;display:flex;flex-direction:row;gap:0;border-left:1px solid var(--line682)}
+  html.ui682 #zoomer button{width:44px;height:44px;border:0;background:none;color:#e8f3eb;box-shadow:none;font:400 21px/1 system-ui,sans-serif}
+  html.ui682 #nav682{display:flex;gap:2px;align-items:stretch;margin-top:4px}
+  html.ui682 #nav682>.entry682,html.ui682 #nav682 #tools>.tool{display:flex;flex:1 1 0;min-width:0;height:47px;min-height:44px;
+    flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:2px;background:transparent;color:#e0ede4;
+    border:0;border-radius:9px;box-shadow:none;font-size:11px;font-weight:650;line-height:14px;white-space:nowrap}
+  html.ui682 #nav682 #tools{display:contents}
+  html.ui682 #nav682 #tools>.tool,html.ui682 #nav682 #tools>#toolsExp{display:none}
+  html.ui682 #nav682 #tools>.tool:is([data-tid=pan],[data-tid=doze]){display:flex;flex:.76 1 0;color:#c2d9cd}
+  html.ui682 #nav682 .tool .pr{display:none}
+  html.ui682 #nav682 .tool .ic{font-size:16px;line-height:18px}
+  html.ui682 #nav682 #tools>.tool.sel{background:#29453c;color:#effbf0}
+  html.ui682 #nav682 [data-root=build]{background:var(--mint682);color:#14382a}
+  html.ui682 #nav682:has([aria-expanded=true]) [data-root=build][aria-expanded=false]{background:transparent;color:#e0ede4}
+  html.ui682 #nav682 .entry682 span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  html.ui682 #nav682 .entry682[aria-expanded=true]{background:#e6f3da;color:#173b2d}
+  .glyph682{display:block;width:20px;height:18px;position:relative;color:inherit}
+  [data-root=build] .glyph682:before{content:'';position:absolute;inset:1px auto auto 2px;width:6px;height:6px;border-radius:1px;background:currentColor;box-shadow:8px 0,0 8px,8px 8px}
+  [data-root=city] .glyph682:before{content:'';position:absolute;left:1px;bottom:1px;width:5px;height:11px;background:currentColor;box-shadow:6px -4px,12px 1px}
+  [data-root=map] .glyph682:before,[data-root=map] .glyph682:after{content:'';position:absolute;left:3px;top:1px;width:14px;height:11px;border:1.8px solid currentColor;transform:rotate(-27deg) skew(25deg);border-radius:2px}
+  [data-root=map] .glyph682:after{top:5px;border-top:0;border-right:0}
+  html.ui682 #shade682:not([hidden]){display:block;position:fixed;inset:var(--clear682) 0 var(--below682);z-index:30;background:rgba(11,28,23,.22);touch-action:none}
+  html.ui682 #sheet682:not([hidden]){display:flex;flex-direction:column;bottom:var(--below682);z-index:32;overflow:hidden;
+    max-height:calc(100dvh - var(--clear682) - var(--below682));border-radius:16px;background:var(--paper682);color:#20332a;touch-action:pan-y}
+  #head682{min-height:48px;flex:none;display:flex;align-items:center;gap:3px;padding:0 5px;border-bottom:1px solid #cbd4c4}
+  #head682 h2{min-width:0;flex:1;margin:0;padding-left:9px;font-size:18px;line-height:1.3;letter-spacing:.03em}
+  #head682 button,#brush682{min-width:44px;min-height:44px;background:transparent;color:#365349;border:0;border-radius:6px;font-size:18px}
+  #head682 button[hidden],#sheet682 [hidden]{display:none}
+  #brush682{font-size:13px}
+  #body682{min-height:0;overflow:auto;overscroll-behavior:contain;padding:7px;scrollbar-width:thin;touch-action:pan-y}
+  #list682,html.ui682 #body682 #toolcats{position:static;display:grid;width:auto;max-width:none;transform:none;background:none;border:0;box-shadow:none;
+    grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:0;border-radius:0;touch-action:pan-y}
+  #list682:empty{display:none}
+  html.ui682 #body682 #toolcats{display:grid!important}
+  #list682 button,html.ui682 #body682 #toolcats button{min-width:0;min-height:54px;padding:7px 10px;border:1px solid #d3dacd;border-radius:8px;
+    background:#fffdf6;color:#223c30;box-shadow:none;text-align:left;white-space:normal;font-size:14px;font-weight:700}
+  #list682 button small,html.ui682 #body682 #toolcats button[data-example]::after{display:block;color:#536c5b;font-size:11px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
+  html.ui682 #body682 #toolcats button[data-example]::after{content:attr(data-example)}
+  html.ui682 #railCats682:not(:has(#toolcats))::before{content:attr(data-tool);padding-left:9px;font-size:12px;color:var(--muted682)}
+  html.ui682 #body682 #toolcats button.on{border-color:#729981;background:#e4eedf;color:#244336}
+  html.ui682 #body682 #toolcats button:not([data-cat]){display:none}
+  html.ui682 #body682 #tools{position:static;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-auto-columns:minmax(114px,39%);
+    gap:5px;margin:0;padding:0;transform:none;width:auto;max-width:none;height:auto;max-height:none;justify-content:start;overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:thin;scrollbar-color:#849d8a transparent;background:none;border:0;border-radius:0;box-shadow:none;touch-action:pan-x}
+  html.ui682 #body682 .tool{width:100%;min-width:0;min-height:52px;height:auto;display:grid;grid-template-columns:25px 1fr;grid-template-rows:auto auto;
+    gap:0 5px;align-content:center;justify-content:start;text-align:left;padding:5px 6px;background:#fffdf6;border:1px solid #d3dacd;border-radius:8px;
+    color:#203b30;box-shadow:none;font-size:13px;font-weight:680;line-height:1.25}
+  html.ui682 #body682 .tool .ic{grid-row:span 2;font-size:20px;align-self:center;text-align:center}
+  html.ui682 #body682 .tool .pr{color:#51684f;font-size:11px;font-variant-numeric:tabular-nums}
+  html.ui682 #body682 .tool:is([data-tid=pan],[data-tid=doze]){order:1}
+  html.ui682 #body682 .tool.sel{border-color:#729981;background:#dfebd9}
+  html.ui682 #body682 #toolsExp{position:absolute;inset:2px 51px auto auto;width:48px;height:44px;border:0;background:transparent;color:#345342;box-shadow:none;font-size:0}
+  html.ui682 #body682 #toolsExp::before{content:'展開';font:650 12px/1 system-ui,sans-serif}
+  html.ui682 body.toolsExp #body682 #toolsExp::before{content:'收合'}
+  html.ui682 #sheet682:has(#toolsExp) #head682{padding-right:55px}
+  html.ui682 #sheet682:has(#toolsExp) #close682{position:absolute;right:5px;top:2px}
+  html.ui682 body.toolsExp #body682 #tools{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-columns:auto;overflow:visible;touch-action:pan-y}
+  html.ui682 #mini,html.ui682 #miniToggle{display:none!important}
+  html.ui682.mini682 #mini,html.ui682.mini682 #miniToggle{display:block!important;top:var(--clear682)}
+  html.ui682.mini682 #miniToggle{width:44px;height:44px}
+  html.ui682 #p06-panel:has(#p06-expanded[hidden]){display:none}
+  html.ui682 #p06-panel{top:auto;left:var(--edge682);right:var(--end682);bottom:var(--below682);z-index:29;max-width:540px;width:auto;margin-inline:auto}
+  html.ui682 #p06-expanded{width:100%;max-height:calc(100dvh - var(--clear682) - var(--below682))}
+  html.ui682 #info{bottom:var(--below682);left:var(--edge682);right:var(--end682);margin-inline:auto;width:auto;max-width:540px;
+    max-height:calc(100dvh - var(--clear682) - var(--below682))}
+  html.ui682 #infoX{display:grid;place-items:center;min-width:44px;min-height:44px;top:0;right:0}
+  html.ui682 #toasts{bottom:var(--below682);pointer-events:none}
+  html.ui682:has(#sheet682:not([hidden])) #toasts{visibility:hidden}
+}
+@media(min-width:650px) and (max-width:899px) and (orientation:landscape){
+  html.ui682 #dock682,html.ui682 #sheet682,html.ui682 #p06-panel,html.ui682 #info{right:auto;width:min(57vw,460px)}
+  html.ui682 #hint{max-width:calc(100vw - var(--edge682) - var(--end682) - 118px)}
+  html.ui682 #body682 #tools{grid-template-rows:auto;grid-auto-columns:32%}
+  html.ui682 #body682 #toolcats,#list682{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
@@ -696,6 +811,19 @@ html.noT428 #start .settingsGrid{min-width:auto;width:auto;max-width:420px;grid-
 <div id="toolcats"></div>
 <div id="tools"></div>
 <div id="toasts"></div>
+<div id="shade682" hidden></div>
+<section id="sheet682" role="region" aria-labelledby="title682" hidden>
+  <header id="head682"><button type="button" id="back682" aria-label="返回上一層" hidden>‹</button><h2 id="title682" tabindex="-1"></h2><button type="button" id="brush682" hidden></button><button type="button" id="close682" aria-label="關閉選單">✕</button></header>
+  <div id="body682"><div id="list682"></div></div>
+</section>
+<div id="dock682">
+  <div id="rail682"><div id="railCats682"></div></div>
+  <nav id="nav682" aria-label="小鎮操作">
+    <button class="entry682" type="button" data-root="build" aria-controls="sheet682" aria-expanded="false"><i class="glyph682" aria-hidden="true"></i><span>建設</span></button>
+    <button class="entry682" type="button" data-root="city" aria-controls="sheet682" aria-expanded="false"><i class="glyph682" aria-hidden="true"></i><span>城市</span></button>
+    <button class="entry682" type="button" data-root="map" aria-controls="sheet682" aria-expanded="false"><i class="glyph682" aria-hidden="true"></i><span>地圖</span></button>
+  </nav>
+</div>
 <div id="dragcost"></div>
 <canvas id="mini" width="144" height="144"></canvas>
 <button id="miniToggle" title="切換小地圖視圖：普通／地價／污染／壅堵／犯罪／服務覆蓋">🏭</button>
@@ -957,7 +1085,7 @@ const COMMUTE_PEN_UNREACH=.30;   // T141：不可達（孤島，無路網連到�
 const COMMUTE_TRIP_W=1;          // T141：每叢集代表每天沿快取路徑貢獻的通勤 trip 權重（累加進 roadPass/commutePass，同 T129 尺度）
 const COST={road:15,bridge:60,zone:8,park:60,plant:550,water:400,wpipe:10,doze:2,fire:400,police:500,hospital:600,clinic:250,school:350,library:280,post:320,cemetery:350,dump:300,rdec:25,hwy:45,hwyBridge:180,stad:1200,tree:5,fill:20,bus:80,rail:40,railBridge:160,station:900,port:1100,dock:80,airport:3500,oneway:20,light:60,parking:150,parkMeter:15,busLane:35,tram:70,tramStation:700,officeZone:12,farm:120,ranch:180,landmark:2000,solar:450,wind:600,sewage:500,ambulance:550,recycling:350,fireStation2:800,prison:900,university:1200,levee:60,tdig:40,tland:60,traise:50,museum:1400,theater:1100,aquarium:1700,zoo:2300,amuse:2700,cinema:550,grandlib:1900,civicHall:2000,court:900,convention:3200,institute:1600,wstation:700,botanical:2200,megahosp:2800,oilwell:1300,mine:1500,megaproject:4500,policeBox:250,bigFarm:750,bigCemetery:1400,grandStation:2200,sportsComplex:2600,foodPlant:1800,nuclear:5000,hydro:2200,geo:900,fireHQ:1600,wasteIncinerator:1800,greenhouse:950,warehouse:1200,grandMall:3000,faithCenter:1600,clockTower:1100,observatory:2400,windmill:900,skytower:1300,ancienttree:600,harborlm:900,carousel:1700,pavilion:800,lighthouse:1400,fountain:700,monument:1600,archway:1500,ferriswheel:2000,watertowerlm:1100,guesthouse:380,hotel:1500,resort:3800,kindergarten:420,seniorCenter:450,bank:1300,market:950,compost:550,tvtower:2200,marina:1700,tradepost:1100,dogpark:320,icerink:900,skatepark:550,firewatch:180,pool:650,fishpier:520,hostel:600,chapel:1250,brewery:1350,waterpark:2400,vetclinic:480,skyrest:1900,cgarden:260,crematorium:900,highschool:1600,techpark:4200,freight:1800,upcycle:1900,centralpark:2200,unicampus:6800,megaport:9500,civiccenter:3000,datacenter:3600,gaswell:1400,fertplant:1700,kitchen:1500,fishfarm:700}; // T290：大型購物中心 4×4 商業旗艦 // T280：溫室 $950（2×2 全年恆溫食物+金幣，冬季免疫） // T265：焚化發電 2×2／$1800／垃圾容量100／供電60+8/級／高污染 // T257：核電 $5000（3×3 容量250+40/級）／水力 $2200（2×2 鄰水 100+15/級）／地熱 $900（1×1 45+8/級）／消防總局 $1600（3×3 fireHQ 半徑16） // T254：食品加工廠 $1800（3×3，農場加工鏈：食物盈餘轉金幣/就業25/維護14/可升級加工容量） // T241：體育園區 $2600（3×3，就業40/幸福半徑16/維護18） // T234：中央車站 $2200（3×3，就業30/維護15/列車上限+1） // T233：大墓園 $1400（3×3，容量24/半徑16/維護8） // T228：大農場 $750（5×5，食物20/就業18/維護6） // T222：派出所 $250（警察局 $500 的小型分型，半徑 5<10、維護 1.5<4） // T95：ambulance 400→550（原價+維護皆低於醫院、效果卻等同醫院且多送5就業，數值失衡，微調拉近但仍小於醫院600、保留半徑10<12的合理折價）；T121：tdig=挖水 tland=填土 traise=抬升削平（地形筆刷，$/格）；T138：museum博物館/theater劇院/aquarium水族館/zoo動物園/amuse遊樂園/cinema電影院/grandlib圖書總館（k=35-41）；T139：civicHall市政廳/court法院/convention會展中心/institute研究院/wstation氣象站/botanical植物園/megahosp綜合醫院（k=42-48，megahosp 比照 T95 教訓：造價2800/維護16 遠高於醫院600/5，避免以超大半徑碾壓既有醫療建築）；T140：oilwell油井/mine礦場（k=49-50，需對應資源格）/megaproject太空研究中心（k=51，終局消耗supplies大型建築，比照T95教訓造價4500/維護高於一般服務建築）
 
-const GAME_VER='11.256'; // T552 指令面板與 HUD 分組：13 顆平排按鈕分四語義群（純包裹層）＋Ctrl/Cmd+K 或 / 開指令面板，索引建築153/政策51/面板13＝217 個目標；核心紀律＝路由器不是第二套實作（只 .click() 既有控制項，T517 判例）；Ctrl+K 判定插在修飾鍵早退之前、面板開啟時攔截 Esc 不落到「選回第一個工具」
+const GAME_VER='11.257'; // T552 指令面板與 HUD 分組：13 顆平排按鈕分四語義群（純包裹層）＋Ctrl/Cmd+K 或 / 開指令面板，索引建築153/政策51/面板13＝217 個目標；核心紀律＝路由器不是第二套實作（只 .click() 既有控制項，T517 判例）；Ctrl+K 判定插在修飾鍵早退之前、面板開啟時攔截 Esc 不落到「選回第一個工具」
 Object.assign(COST,{refinery:2800,steelMill:3200,shipyard:3800}); // T364b：3×3 深加工投資
 Object.assign(COST,{basketballCourt:260,tennisCourt:300,playground:220,socialHousing:1100,substation:520,desalination:1800,pumpStation:650,disasterCenter:2100,shelterPark:850,disasterRadar:1450}); // T364c/d：休閒／社宅／防災基礎設施
 const TOOLS=[
@@ -23024,6 +23152,7 @@ function buildToolbar(){
   for(const c of TOOL_CATS){
     const b=document.createElement('button');
     b.textContent=c.nm;b.className=c.id===toolCat?'on':'';
+    b.dataset.cat=c.id;
     b.onclick=()=>{toolCat=c.id;buildToolbar();sTick();};
     cats.appendChild(b);
   }
@@ -23070,6 +23199,7 @@ function buildToolbar(){
     eb.className=toolsExpanded?'on':'';
     eb.textContent=toolsExpanded?'▴':'▾';
     eb.title=toolsExpanded?'收合工具列':'展開工具列（看完整清單）';
+    eb.setAttribute('aria-expanded',String(toolsExpanded));eb.setAttribute('aria-label',eb.title);
     eb.onclick=()=>{toolsExpanded=!toolsExpanded;buildToolbar();sTick();};
     bar.appendChild(eb);
   }
@@ -32438,6 +32568,170 @@ if(t679On()&&t680On()&&document.documentElement&&document.documentElement.classL
   }
 }
 const moreEl=$('#startMore')||startEl; // T158：次級選項分組容器（難度/挑戰/戰役收攏於此，視覺降階），缺容器時退回 startEl 保底
+/* T682 只負責選單路徑；分類、工具、存檔及港區都交給原控制項。 */
+function t682On(){return !(window.__noT682||/(?:^|[?&])noT682(?:=1)?(?:&|$)/.test((typeof location!=='undefined'&&location.search)||''));}
+if(t679On()&&t680On()&&t682On()&&typeof window.matchMedia==='function'&&document.getElementById('nav682')?.querySelector){
+  const mobile=window.matchMedia('(max-width:899px)'),html=document.documentElement;
+  const dock=$('#dock682'),nav=$('#nav682'),rail=$('#rail682'),railCats=$('#railCats682');
+  const sheet=$('#sheet682'),shade=$('#shade682'),body=$('#body682'),list=$('#list682'),title=$('#title682');
+  const back=$('#back682'),brush=$('#brush682'),cats=$('#toolcats'),bar=$('#tools'),zoom=$('#zoomer');
+  const hint=$('#hint'),hintX=$('#hintX'),infoX=$('#infoX'),entries=Array.from(nav.querySelectorAll('[data-root]'));
+  const homeLabels={build:'建設',city:'城市',map:'地圖'};
+  const groups={
+    city:[['metrics','城市概況','財政、人口、需求'],['manage','市政與營運','港區、政策、通知'],['system','存檔與設定','存讀、聲音、說明']],
+    map:[['camera','視角控制','方向、縮放'],['layers','小地圖與圖層','小地圖、地鐵']],
+    metrics:[['money','財政'],['pop','人口'],['jobs','就業'],['happy','幸福'],['star','城市評分'],['date','日期與季節'],['rci','分區需求']],
+    manage:[['p06-toggle','港區營運'],['bStats','統計與政策'],['bAI','AI 市長'],['bBell','通知'],['bAch','成就'],['bEditor','編輯目標']],
+    system:[['bSave','存檔與讀取'],['bUndo','復原上一步'],['bHelp','玩法指南'],['bSound','聲音'],['bMenu','返回主選單'],['bNew','新建地圖']],
+    camera:[['bRot','旋轉視角'],['zin','放大'],['zout','縮小']],
+    layers:[['overview','小地圖'],['miniToggle','切換小地圖模式'],['bMetro','地鐵圖層']]
+  };
+  // 保存各控制項原來的位置，桌面切回時連同原事件、鍵盤捷徑一起復原。
+  let origins=[],root='',group='',active=false,observer=null,lastFocus=null,overview=false,desktopExpanded=false;
+  const focus=el=>el?.focus({preventScroll:true});
+  const nameOfTool=()=>TOOLS.find(t=>t.id===tool)?.nm||'檢視';
+  function updateTool(){
+    const name=nameOfTool(),entry=entries[0],label=tool==='pan'||tool==='doze'?'建設':name;
+    entry.lastElementChild.textContent=label;
+    entry.setAttribute('aria-label','建設，目前工具：'+name);
+    railCats.dataset.tool='目前工具 · '+name;
+  }
+  function measure(){
+    if(!active)return;
+    for(const [key,el] of [['--hint682',hint],['--base682',dock]]){
+      const h=Math.ceil(el.getBoundingClientRect().height)+'px';
+      if(html.style.getPropertyValue(key)!==h)html.style.setProperty(key,h);
+    }
+  }
+  function originalPanelClose(){
+    if(!$('#p06-expanded').hidden)$('#p06-collapse').click();
+    if($('#info').style.display==='block')hideInfo();
+  }
+  function routeLabel(id){
+    const el=document.getElementById(id);
+    if(id==='overview')return overview?'目前顯示':'目前收起';
+    if(id==='p06-toggle')return $('#p06-chip-status').textContent;
+    if(id==='bAI')return aiMode?'已啟用':'手動治理';
+    if(id==='bSound')return ['靜音','音效','音效與音樂'][sndMode];
+    if(id==='miniToggle')return el.title;
+    if(id==='bMetro')return el.classList.contains('on')?'顯示中':'';
+    if(id==='rci')return '住宅・商業・工業';
+    if(id==='bRot'||(group==='metrics'&&el))return el.textContent.trim();
+    return '';
+  }
+  function addRow(id,label,detail){
+    const b=document.createElement('button');b.type='button';b.dataset.route=id;b.textContent=label;
+    if(detail){const small=document.createElement('small');small.textContent=detail;b.append(small);}
+    list.append(b);
+  }
+  function drawMenu(moveFocus){
+    const open=!!root,toolsOpen=root==='build'&&!!group,allCats=root==='build'&&!group;
+    sheet.hidden=shade.hidden=!open;
+    entries.forEach(b=>b.setAttribute('aria-expanded',String(b.dataset.root===root)));
+    list.replaceChildren();
+    (allCats?body:railCats).append(cats);
+    (toolsOpen?body:nav).append(bar);
+    if(!toolsOpen&&toolsExpanded){toolsExpanded=false;buildToolbar();}
+    back.hidden=!group;brush.hidden=!(toolsOpen&&group==='terra');
+    if(!brush.hidden)brush.textContent='筆刷 '+terraBrush+'×'+terraBrush;
+    updateTool();
+    if(!open)return;
+    if(allCats){
+      for(const b of cats.querySelectorAll('[data-cat]')){
+        b.dataset.example=TOOLS.filter(t=>t.cat===b.dataset.cat&&(!t.unlockRank||rankIdx+1>=t.unlockRank)).slice(0,2).map(t=>t.nm).join('・');
+      }
+    }else if(!toolsOpen){
+      for(const [id,label,desc] of groups[group||root]){
+        const target=document.getElementById(id);
+        if(group&&id!=='overview'&&(!target||target.disabled||target.style.display==='none'||id==='p06-toggle'&&$('#p06-panel').hidden))continue;
+        addRow(id,label,desc||routeLabel(id));
+      }
+    }
+    title.textContent=toolsOpen?TOOL_CATS.find(c=>c.id===group).nm:group?groups[root].find(row=>row[0]===group)[1]:homeLabels[root];
+    body.scrollTop=0;
+    if(moveFocus)focus(title);
+  }
+  function closeMenu(restore=true){
+    if(!root)return;
+    const trigger=lastFocus;root=group='';drawMenu(false);
+    if(restore)focus(trigger?.isConnected&&trigger.getClientRects().length?trigger:entries[0]);
+  }
+  function up(){
+    if(!group){closeMenu();return;}
+    const from=group;group='';drawMenu(false);
+    focus((root==='build'?cats:list).querySelector('[data-'+(root==='build'?'cat':'route')+'="'+from+'"]')||title);
+  }
+  nav.addEventListener('click',e=>{
+    const b=e.target.closest('[data-root]');if(!active||!b)return;
+    if(root===b.dataset.root){closeMenu();return;}
+    originalPanelClose();lastFocus=b;root=b.dataset.root;group='';drawMenu(true);
+  });
+  // 先換容器再讓原生分類按鈕重建工具，展開鍵量到的是玩家眼前的寬度。
+  cats.addEventListener('click',e=>{
+    const b=e.target.closest('[data-cat]');if(!active||!b)return;
+    originalPanelClose();if(root!=='build')lastFocus=entries[0];
+    root='build';group=b.dataset.cat;drawMenu(false);
+  },true);
+  cats.addEventListener('click',e=>{if(active&&e.target.closest('[data-cat]'))focus(title);});
+  bar.addEventListener('click',e=>{
+    if(!active)return;
+    if(e.target.closest('#toolsExp')){focus($('#toolsExp'));return;}
+    if(e.target.closest('.tool')){closeMenu();updateTool();}
+  });
+  brush.addEventListener('click',()=>{cats.querySelector('button:not([data-cat])')?.click();brush.textContent='筆刷 '+terraBrush+'×'+terraBrush;});
+  list.addEventListener('click',e=>{
+    const b=e.target.closest('[data-route]');if(!active||!b)return;
+    const id=b.dataset.route;
+    if(!group){group=id;drawMenu(true);return;}
+    closeMenu();
+    if(id==='overview'||id==='miniToggle'){
+      overview=id==='overview'?!overview:true;html.classList.toggle('mini682',overview);
+      if(id==='overview')return;
+    }
+    const target=document.getElementById(id);if(!target||target.disabled)return;target.click();
+    if(id==='p06-toggle')focus($('#p06-collapse'));
+    else if($('#info').style.display==='block')focus(infoX);
+  });
+  back.addEventListener('click',up);$('#close682').addEventListener('click',()=>closeMenu());
+  shade.addEventListener('click',()=>closeMenu());
+  $('#p06-collapse').addEventListener('click',()=>{if(active)focus(entries[1]);});
+  $('#p06-panel').addEventListener('keydown',e=>{
+    if(active&&e.key==='Escape')queueMicrotask(()=>{if($('#p06-expanded').hidden)focus(entries[1]);});
+  });
+  document.addEventListener('click',e=>{
+    if(active&&root&&$('#hud').contains(e.target))closeMenu(false);
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(!active)return;
+    if(root&&e.key==='Escape'){e.preventDefault();e.stopPropagation();up();return;}
+    if(e.target===infoX&&['Enter',' ','Escape'].includes(e.key)){e.preventDefault();e.stopPropagation();infoX.click();focus(entries[1]);return;}
+    if((sheet.contains(e.target)||dock.contains(e.target)||e.target===hintX||e.target.id==='bSave'||e.target.id==='bSpeed')&&(e.key===' '||e.key==='Enter'))e.stopPropagation();
+  },true);
+  function responsive(){
+    if(active===mobile.matches)return;
+    if(mobile.matches){
+      const prior=document.activeElement;desktopExpanded=toolsExpanded;
+      active=true;origins=[cats,bar,zoom].map(el=>{const mark=document.createComment('T682');el.before(mark);return [el,mark];});
+      const oldMore=$('#hudMore680');oldMore.open=false;
+      infoX.tabIndex=0;infoX.setAttribute('role','button');infoX.setAttribute('aria-label','關閉資訊面板');
+      html.classList.add('ui682');html.classList.toggle('mini682',overview);
+      rail.append(zoom);drawMenu(false);syncHudH();measure();
+      if(window.ResizeObserver){observer=new ResizeObserver(measure);observer.observe(hint);observer.observe(dock);}
+      if(prior&&prior!==document.body&&(!prior.isConnected||!prior.getClientRects().length))focus(entries[prior.closest('#hud')?1:0]);
+    }else{
+      const returnFocus=sheet.contains(document.activeElement)||dock.contains(document.activeElement);
+      closeMenu(false);active=false;observer?.disconnect();observer=null;
+      html.classList.remove('ui682','mini682');html.style.removeProperty('--hint682');html.style.removeProperty('--base682');
+      for(const attr of ['tabindex','role','aria-label'])infoX.removeAttribute(attr);
+      for(const [el,mark] of origins)mark.replaceWith(el);
+      origins=[];toolsExpanded=desktopExpanded;buildToolbar();syncHudH();if(returnFocus)focus($('#bStats'));
+    }
+  }
+  mobile.addEventListener('change',responsive);
+  window.addEventListener('resize',()=>{if(active){syncHudH();measure();}});
+  hintX.setAttribute('aria-label','關閉新手引導');
+  responsive();
+}
 /* T515：真瀏覽器有三個語義 section；Node mock 不會建靜態 class tree，故每個目標都有無副作用回退。
    回退只服務測試 harness，正式 DOM 一律落到對應 group；不改任何按鈕 id／事件／儲存鍵。 */
 const startGroup515=(sel)=>moreEl&&moreEl.querySelector?moreEl.querySelector(sel):null;
