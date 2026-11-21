@@ -123,7 +123,11 @@ async function main(){
           check(await p.evaluate(()=>document.querySelector('#p06-panel').getBoundingClientRect().top>=document.querySelector('#hint').getBoundingClientRect().bottom),key+' 港區與多行教學不重疊');
           await p.locator('#hintTxt').evaluate((e,v)=>e.textContent=v,original);
         }
-        await tap(p,'#p06-collapse');await tap(p,'#hintX');check(!await visible(p,'#hint'),key+' 關閉教學');
+        if(w===390&&mode!=='smoke'){
+          await tap(p,'#bSave');await p.waitForFunction(()=>document.querySelector('#p06-expanded').hidden);
+          check(await visible(p,'#info')&&await p.locator('#infoBody').getByText('存檔槽',{exact:false}).first().isVisible(),'港區中直接存檔，存檔面板可操作');await tap(p,'#infoX');
+        }else await tap(p,'#p06-collapse');
+        await tap(p,'#hintX');check(!await visible(p,'#hint'),key+' 關閉教學');
         if(w===390&&mode!=='smoke'){
           await menu(p,'city');await row(p,'system');await row(p,'bSave');
           const slot=p.locator('#infoBody .row').filter({hasText:/^槽3/});
@@ -136,6 +140,9 @@ async function main(){
           await menu(p,'city');await row(p,'system');await p.keyboard.press('Escape');
           check(await p.locator(':focus').getAttribute('data-route')==='system','返回二級恢復焦點');
           await p.keyboard.press('Escape');check(await p.locator(':focus').getAttribute('data-root')==='city','關閉回一級焦點');
+          await menu(p,'build');await cat(p,'road');await p.keyboard.press('Control+k');
+          check(await visible(p,'#cmdk552')&&!await visible(p,'#sheet682'),'在第三級開啟指令面板');await p.keyboard.press('Escape');
+          check(!await visible(p,'#cmdk552'),'Escape 直接關閉指令面板');
           await menu(p,'build');
           const outside=await p.locator('#shade682').evaluate(e=>{const r=e.getBoundingClientRect();const x=r.left+r.width/2,y=r.top+4;return document.elementFromPoint(x,y)===e?{x,y}:null;});
           check(outside,'選單上方可點地圖區');await p.touchscreen.tap(outside.x,outside.y);check(!await visible(p,'#sheet682'),'點地圖外層收合');

@@ -32589,6 +32589,9 @@ if(t679On()&&t680On()&&t682On()&&typeof window.matchMedia==='function'&&document
   // 保存各控制項原來的位置，桌面切回時連同原事件、鍵盤捷徑一起復原。
   let origins=[],root='',group='',active=false,observer=null,lastFocus=null,overview=false,desktopExpanded=false;
   const focus=el=>el?.focus({preventScroll:true});
+  const infoWatch=window.MutationObserver?new MutationObserver(()=>{
+    if(active&&$('#info').style.display==='block'&&!$('#p06-expanded').hidden){$('#p06-collapse').click();focus(infoX);}
+  }):null;
   const nameOfTool=()=>TOOLS.find(t=>t.id===tool)?.nm||'檢視';
   function updateTool(){
     const name=nameOfTool(),entry=entries[0],label=tool==='pan'||tool==='doze'?'建設':name;
@@ -32702,7 +32705,8 @@ if(t679On()&&t680On()&&t682On()&&typeof window.matchMedia==='function'&&document
     if(active&&root&&$('#hud').contains(e.target))closeMenu(false);
   },true);
   document.addEventListener('keydown',e=>{
-    if(!active)return;
+    if(!active||cmdkOn552)return;
+    if(root&&(e.key==='/'||(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k')){closeMenu();return;}
     if(root&&e.key==='Escape'){e.preventDefault();e.stopPropagation();up();return;}
     if(e.target===infoX&&['Enter',' ','Escape'].includes(e.key)){e.preventDefault();e.stopPropagation();infoX.click();focus(entries[1]);return;}
     if((sheet.contains(e.target)||dock.contains(e.target)||e.target===hintX||e.target.id==='bSave'||e.target.id==='bSpeed')&&(e.key===' '||e.key==='Enter'))e.stopPropagation();
@@ -32716,11 +32720,12 @@ if(t679On()&&t680On()&&t682On()&&typeof window.matchMedia==='function'&&document
       infoX.tabIndex=0;infoX.setAttribute('role','button');infoX.setAttribute('aria-label','關閉資訊面板');
       html.classList.add('ui682');html.classList.toggle('mini682',overview);
       rail.append(zoom);drawMenu(false);syncHudH();measure();
+      infoWatch?.observe($('#info'),{attributes:true,attributeFilter:['style']});
       if(window.ResizeObserver){observer=new ResizeObserver(measure);observer.observe(hint);observer.observe(dock);}
       if(prior&&prior!==document.body&&(!prior.isConnected||!prior.getClientRects().length))focus(entries[prior.closest('#hud')?1:0]);
     }else{
       const returnFocus=sheet.contains(document.activeElement)||dock.contains(document.activeElement);
-      closeMenu(false);active=false;observer?.disconnect();observer=null;
+      closeMenu(false);active=false;observer?.disconnect();observer=null;infoWatch?.disconnect();
       html.classList.remove('ui682','mini682');html.style.removeProperty('--hint682');html.style.removeProperty('--base682');
       for(const attr of ['tabindex','role','aria-label'])infoX.removeAttribute(attr);
       for(const [el,mark] of origins)mark.replaceWith(el);

@@ -1,6 +1,6 @@
 # glimmer-town 架構 ／ 代碼地圖（ARCH.md）
 
-**現況（測繪基準）**：單檔 `index.html`，v11.257，實測 55429 行（LF 計數）。T682 手機以建設、城市、地圖三級導覽，港區透過市政選單開啟，教學、資訊面板及底座依實測高度排列。`?noT682=1` 可回到 T680。T681 鐵路與輕軌共用軌形；彎道逐節轉向、平行線分流、橋軌與平交道、站側月台。T680 的四項次級操作在回退時收於「更多」。T677：正式港區單港／單批選擇性晉升，預設OFF；單件貨櫃、原生布局與接受時間、桌機／手機玩家介面；批次只在本頁記憶體，原存檔schema／PWA／財政不改；`?noT677=1`／`window.__noT677` 退回原生。業主 2026-10-29「接受預算，T677 先上」，Claude 接手落地，性能記為已知成本；發布以合併後 main CI 與 Pages 驗證為準。T679 手機 UI（業主 2026-10-27 看圖接受）：<900px 的 HUD／分類／工具列表面與 safe-area 一致化，?noT679=1／載入前 window.__noT679 退回原 UI；桌面與引擎不變。T718：發佈網址遷至 https://game.lijiabao.uk/glimmertown/，`<head>` 加繁中 SEO／OG 標籤，畫面與玩法零變動。T717 候選：T603 兩段原生濾鏡繪製原文不動，外層 clip717 按目前變換的四角整數外框外擴 2px；?noT717=1／window.__noT717 退回原路，視覺與原生性能尚未驗收。T715：draw() 五段逐格迴圈只掃可見範圍（`visRange715`，`?noT715=1`／`window.__noT715` 退回全圖掃描），畫面逐位不變。T707：列車每節沿軌跡取樣（轉彎不甩出軌道）、線尾停車後推拉折返、停站與減速、前方有車就等（`t707On`，`?noT707=1`／`window.__noT707` 退回 T706）。T706：列車從車站生成時朝軌道走向、鐵路與輕軌各走各的（`t706On`，`?noT706=1`／`window.__noT706` 退回）。T704：鐵路線尾的車擋夜光不再進 T149 光暈迴圈（曾讓有線尾的夜景整片白），迴圈也略過缺座標的條目。T659：第一波英式商店（T670）不吃舊 T427 建築疊層（`t659On`，`?noT659=1`／`window.__noT659` 退回）。T646：`GV.artAtlas646(visit)` 新美術清冊（SPR 之外按需烘焙的 T601／T602／T603 園區、T634、T635、T638），CI 的 fp job 實算後釘進 `docs/ART_PINS.json`；只加除錯鉤子，遊戲畫面逐位不變。T638：消防局三類各補兩款英式變體（v1／v2，獨立 T638 區塊；依根格雜湊選款、不寫存檔；`?noT638=1`／`window.__noT638` 退回每類一款；T635 區塊逐字未動）。T629：HUD 數字補間的進度夾在 0–1（rAF 時間戳早於起點時不再外推成負幾十億，只影響顯示）。T628：T601 垃圾場（k8）描邊圖層與民宿（k81）圖層畫布改 `willReadFrequently`（放在 CPU 端，描邊回讀不用等 GPU），新圖第一次烘圖約快一倍、像素逐位不變。前情：T601 藍灰重畫第一批 8 類；GPT 的 T602（第二批：大農場、社區菜園、天然氣井、背水碼頭）、T603（社區公共設施）與 GitHub Pages 發佈；T626／T630 計時閘門穩定化、T627 發佈管線改為版本與雜湊取自提交、T631 迭代不改壞標準。
+**現況（測繪基準）**：單檔 `index.html`，v11.257，實測 55434 行（LF 計數）。T682 手機以建設、城市、地圖三級導覽，港區透過市政選單開啟，教學、資訊面板及底座依實測高度排列。`?noT682=1` 可回到 T680。T681 鐵路與輕軌共用軌形；彎道逐節轉向、平行線分流、橋軌與平交道、站側月台。T680 的四項次級操作在回退時收於「更多」。T677：正式港區單港／單批選擇性晉升，預設OFF；單件貨櫃、原生布局與接受時間、桌機／手機玩家介面；批次只在本頁記憶體，原存檔schema／PWA／財政不改；`?noT677=1`／`window.__noT677` 退回原生。業主 2026-10-29「接受預算，T677 先上」，Claude 接手落地，性能記為已知成本；發布以合併後 main CI 與 Pages 驗證為準。T679 手機 UI（業主 2026-10-27 看圖接受）：<900px 的 HUD／分類／工具列表面與 safe-area 一致化，?noT679=1／載入前 window.__noT679 退回原 UI；桌面與引擎不變。T718：發佈網址遷至 https://game.lijiabao.uk/glimmertown/，`<head>` 加繁中 SEO／OG 標籤，畫面與玩法零變動。T717 候選：T603 兩段原生濾鏡繪製原文不動，外層 clip717 按目前變換的四角整數外框外擴 2px；?noT717=1／window.__noT717 退回原路，視覺與原生性能尚未驗收。T715：draw() 五段逐格迴圈只掃可見範圍（`visRange715`，`?noT715=1`／`window.__noT715` 退回全圖掃描），畫面逐位不變。T707：列車每節沿軌跡取樣（轉彎不甩出軌道）、線尾停車後推拉折返、停站與減速、前方有車就等（`t707On`，`?noT707=1`／`window.__noT707` 退回 T706）。T706：列車從車站生成時朝軌道走向、鐵路與輕軌各走各的（`t706On`，`?noT706=1`／`window.__noT706` 退回）。T704：鐵路線尾的車擋夜光不再進 T149 光暈迴圈（曾讓有線尾的夜景整片白），迴圈也略過缺座標的條目。T659：第一波英式商店（T670）不吃舊 T427 建築疊層（`t659On`，`?noT659=1`／`window.__noT659` 退回）。T646：`GV.artAtlas646(visit)` 新美術清冊（SPR 之外按需烘焙的 T601／T602／T603 園區、T634、T635、T638），CI 的 fp job 實算後釘進 `docs/ART_PINS.json`；只加除錯鉤子，遊戲畫面逐位不變。T638：消防局三類各補兩款英式變體（v1／v2，獨立 T638 區塊；依根格雜湊選款、不寫存檔；`?noT638=1`／`window.__noT638` 退回每類一款；T635 區塊逐字未動）。T629：HUD 數字補間的進度夾在 0–1（rAF 時間戳早於起點時不再外推成負幾十億，只影響顯示）。T628：T601 垃圾場（k8）描邊圖層與民宿（k81）圖層畫布改 `willReadFrequently`（放在 CPU 端，描邊回讀不用等 GPU），新圖第一次烘圖約快一倍、像素逐位不變。前情：T601 藍灰重畫第一批 8 類；GPT 的 T602（第二批：大農場、社區菜園、天然氣井、背水碼頭）、T603（社區公共設施）與 GitHub Pages 發佈；T626／T630 計時閘門穩定化、T627 發佈管線改為版本與雜湊取自提交、T631 迭代不改壞標準。
 
 
 **T634 已批准、預設開啟**：全批剩餘 72 家族（69 設施＋住商工），108 住商工設計與 207 設施結構款；普通網址按需烘焙，`?T634=1` 保持相容，`?noT634=1`／`window.__noT634` 回退。已批准的 61 類美術保留，11 類舊檔無 lot574 路徑以原批准素材適配原足跡。來源碎片與實拍工具在 t634-shots；2026-10-11 參考 Lab 全批重製，量體／屋頂／材質／凹窗重新配置，側翼共牆接合、u/v 拓撲畫序、低附屋屋頂比例與阻擋凸窗修復均已納入批准圖；同格基座及模擬不變。PR #16 合入 main 7ad6931e，v11.218 已發布；不是仍未發布的候選。
@@ -186,69 +186,69 @@ T635 三款消防局已經業主圖審批准（2026-10-12「按照Claude的標�
 | T634 工業／公用設施 30 類結構款 | 31585 | `const INDUSTRY634=` |
 | T634 住商工 108 明確設計目錄 | 31975 | `const RCI_CATALOG634=` |
 | `begin` / `toMainMenu` / 開始畫面注入 | 32509 | `function toMainMenu(){` |
-| ├ **T594 住商工立面核心**（實驗線 d172e97 超街區生成器；不接繪製） | 32826 | `/* ===== T594 住商工立面核心` |
-|　├ ARCHE594（住商工原型表） | 32981 | `const ARCHE594={` |
-|　├ makeBlockSprite594（街區精靈核心，getBlockSprite594 快取） | 33240 | `function makeBlockSprite594(` |
-|　├ occClasses594（T653 遮窗包裝） | 33484 | `function occClasses594(` |
-|　├ 立面繪製器：英式 uk1（連棟／半獨立） | 33536 | `/* --- T594 立面繪製器` |
-|　├ 立面繪製器：英式 uk2（白灰泥聯排／紅磚公寓） | 33819 | `// T577 facade_uk2` |
-|　├ 立面繪製器：英式高街（店屋／旅館） | 34104 | `// facade_ukhigh.js — T577` |
-|　├ 立面繪製器：GPT-001 街角店屋 | 34456 | `// GPT-001 — Victorian` |
-|　├ 立面繪製器：美式 us1（布朗石／戰前公寓） | 34583 | `// facade_us1.js — T577` |
-|　├ 立面繪製器：美式主街 | 34958 | `// facade_usmain.js — T577` |
-|　└ 立面繪製器：GROK-002 馬廄 | 35379 | `/* GROK-002 倫敦馬廄街屋` |
-| ├ **T593 都會巨廈新圖**（105／106；S20） | 35486 | `/* ===== T593 都會巨廈新圖（105／106）` |
-|　├ makeTowerSprite593（實驗線 T516 巨廈生成器） | 35540 | `function makeTowerSprite593(` |
-|　├ port593_b05（實驗線 b05 批次，只收 105／106 v1／v2） | 35651 | `function port593_b05(A){` |
-|　│　（port593_b05 中段） | 36129 | `const clipN=L=>{L.ng.save();L.ng.globalCompositeOperation='d` |
-|　└ buildSpritesS20（兩條開機鏈各一次） | 36607 | `function buildSpritesS20(` |
-| ├ **T599 摩天樓 33／34 新款**（S20 尾端 towers599；繪製期 vtower599） | 36625 | `/* ===== T599 摩天樓 33／34 換實驗線 T516 新款` |
-| ├ **T590 實驗線新圖移植**（43 類整鍵取代；S19） | 36643 | `/* ===== T590 實驗線新圖移植（建築精靈）` |
-|　├ 移植工具：makeIso590（實驗線 makeIso575）| 36669 | `function makeIso590(` |
-|　├ silhouette590（實驗線 T573 邊緣光，只套本段新圖）| 36758 | `function silhouette590(` |
-|　├ port590_civic_d1 | 36789 | `function port590_civic_d1(A){` |
-|　├ port590_civic_d2 | 37294 | `function port590_civic_d2(A){` |
-|　├ port590_civic_d3 | 37753 | `function port590_civic_d3(A){` |
-|　├ port590_trans_a | 38331 | `function port590_trans_a(A){` |
-|　├ port590_trans_b | 39020 | `function port590_trans_b(A){` |
-|　│　（port590_trans_b 中段）| 39466 | `bx(0,.06,0,Wd,1,5,'#f2f2ee','#e4e4de','#a6a8a4');bx(.065,.13` |
-|　├ port590_trans_c | 39913 | `function port590_trans_c(A){` |
-|　├ port590_trans_d | 40466 | `function port590_trans_d(A){` |
-|　├ port590_civ_a | 41109 | `function port590_civ_a(A){` |
-|　├ port590_civ_b | 41753 | `function port590_civ_b(A){` |
-|　├ port590_civ_c | 42481 | `function port590_civ_c(A){` |
-|　├ port590_civ_d | 43154 | `function port590_civ_d(A){` |
-|　│　（port590_civ_d 中段）| 43583 | `T.piers(S,[[X-.16,2.955,1],[X+.16,2.955,1],[2.56,2.955],[2.7` |
-|　├ port590_civ_e | 44012 | `function port590_civ_e(A){` |
-|　│　（port590_civ_e 中段）| 44454 | `boxZ(g,cu0,cv0,cu1-cu0,cv1-cv0,0,zC,null,'#bb8753','#86593a'` |
-|　├ port590_civ_f | 44896 | `function port590_civ_f(A){` |
-|　│　（port590_civ_f 中段）| 45303 | `Sc.o(1.12,g=>{boxZ(g,.34-3.5/32,v1,7/32,.08,0,1,C.concH,C.st` |
-|　├ port590_civ_g | 45711 | `function port590_civ_g(A){` |
-|　├ port590_civ_h | 46427 | `function port590_civ_h(A){` |
-|　│　（port590_civ_h 中段）| 46815 | `shadow(g,[['b',.12,.18,1.76,.98,ZB],['b',.16,.26,.5,.78,ZB+2` |
-|　├ port590_cul_a | 47203 | `function port590_cul_a(A){` |
-|　│　（port590_cul_a 中段）| 47635 | `faceL(g,vp,a0,b0,zE+2,zE+3,'#fffaf0');faceR(g,b0,vw,vp,zE+2,` |
-|　├ port590_cul_b | 48066 | `function port590_cul_b(A){` |
-|　├ port590_cul_c | 48720 | `function port590_cul_c(A){` |
-|　│　（port590_cul_c 中段）| 49203 | `// -------- v2 南角正面大門＋中軸大道＋鳥園網籠 --------` |
-|　├ port590_cul_d | 49687 | `function port590_cul_d(A){` |
-|　│　（port590_cul_d 中段）| 50208 | `const signL=(g2,n2,v,ua,ub,za,zb,str,bg)=>{faceL(g2,v,ua,ub,` |
-|　├ port590_cul_e | 50730 | `function port590_cul_e(A){` |
-|　│　（port590_cul_e 中段）| 51157 | `const under=(rin<2&&r>rin-.01&&h.z<zr-2&&w>.5);` |
-|　├ port590_cul_f | 51584 | `function port590_cul_f(A){` |
-|　├ port590_bay_a | 52237 | `function port590_bay_a(A){` |
-|　├ 冬側版 winter590（57 張草坪新圖，名單 win590）| 52938 | `function winter590(` |
-|　└ buildSpritesS19（兩條開機鏈各一次）| 52945 | `function buildSpritesS19(` |
-| 消防局英式外觀 T635（v0 批准款；spr635／bakeFire635） | 52969 | `/* ===== T635 FIRE CANDIDATE BEGIN =====` |
-| 消防局變體 T638（v1／v2；t638On／vi638／spr638／bakeFire638） | 53074 | `/* ===== T638 FIRE VARIANTS BEGIN =====` |
-| 英式高街 T670（十款獨立烘圖與玻璃窗細修） | 53722 | `function t670On(){` |
-| 第一波商店不吃舊 T427 疊層 T659（t659On 逃生閥） | 54124 | `function t659On(){` |
-| `window.GV` 除錯鉤子（194 鍵） | 54128 | `window.GV={` |
-| └ `sprAtlas356()` 素材清冊／像素稽核入口 | 54290 | `sprAtlas356:()=>{` |
+| ├ **T594 住商工立面核心**（實驗線 d172e97 超街區生成器；不接繪製） | 32831 | `/* ===== T594 住商工立面核心` |
+|　├ ARCHE594（住商工原型表） | 32986 | `const ARCHE594={` |
+|　├ makeBlockSprite594（街區精靈核心，getBlockSprite594 快取） | 33245 | `function makeBlockSprite594(` |
+|　├ occClasses594（T653 遮窗包裝） | 33489 | `function occClasses594(` |
+|　├ 立面繪製器：英式 uk1（連棟／半獨立） | 33541 | `/* --- T594 立面繪製器` |
+|　├ 立面繪製器：英式 uk2（白灰泥聯排／紅磚公寓） | 33824 | `// T577 facade_uk2` |
+|　├ 立面繪製器：英式高街（店屋／旅館） | 34109 | `// facade_ukhigh.js — T577` |
+|　├ 立面繪製器：GPT-001 街角店屋 | 34461 | `// GPT-001 — Victorian` |
+|　├ 立面繪製器：美式 us1（布朗石／戰前公寓） | 34588 | `// facade_us1.js — T577` |
+|　├ 立面繪製器：美式主街 | 34963 | `// facade_usmain.js — T577` |
+|　└ 立面繪製器：GROK-002 馬廄 | 35384 | `/* GROK-002 倫敦馬廄街屋` |
+| ├ **T593 都會巨廈新圖**（105／106；S20） | 35491 | `/* ===== T593 都會巨廈新圖（105／106）` |
+|　├ makeTowerSprite593（實驗線 T516 巨廈生成器） | 35545 | `function makeTowerSprite593(` |
+|　├ port593_b05（實驗線 b05 批次，只收 105／106 v1／v2） | 35656 | `function port593_b05(A){` |
+|　│　（port593_b05 中段） | 36134 | `const clipN=L=>{L.ng.save();L.ng.globalCompositeOperation='d` |
+|　└ buildSpritesS20（兩條開機鏈各一次） | 36612 | `function buildSpritesS20(` |
+| ├ **T599 摩天樓 33／34 新款**（S20 尾端 towers599；繪製期 vtower599） | 36630 | `/* ===== T599 摩天樓 33／34 換實驗線 T516 新款` |
+| ├ **T590 實驗線新圖移植**（43 類整鍵取代；S19） | 36648 | `/* ===== T590 實驗線新圖移植（建築精靈）` |
+|　├ 移植工具：makeIso590（實驗線 makeIso575）| 36674 | `function makeIso590(` |
+|　├ silhouette590（實驗線 T573 邊緣光，只套本段新圖）| 36763 | `function silhouette590(` |
+|　├ port590_civic_d1 | 36794 | `function port590_civic_d1(A){` |
+|　├ port590_civic_d2 | 37299 | `function port590_civic_d2(A){` |
+|　├ port590_civic_d3 | 37758 | `function port590_civic_d3(A){` |
+|　├ port590_trans_a | 38336 | `function port590_trans_a(A){` |
+|　├ port590_trans_b | 39025 | `function port590_trans_b(A){` |
+|　│　（port590_trans_b 中段）| 39471 | `bx(0,.06,0,Wd,1,5,'#f2f2ee','#e4e4de','#a6a8a4');bx(.065,.13` |
+|　├ port590_trans_c | 39918 | `function port590_trans_c(A){` |
+|　├ port590_trans_d | 40471 | `function port590_trans_d(A){` |
+|　├ port590_civ_a | 41114 | `function port590_civ_a(A){` |
+|　├ port590_civ_b | 41758 | `function port590_civ_b(A){` |
+|　├ port590_civ_c | 42486 | `function port590_civ_c(A){` |
+|　├ port590_civ_d | 43159 | `function port590_civ_d(A){` |
+|　│　（port590_civ_d 中段）| 43588 | `T.piers(S,[[X-.16,2.955,1],[X+.16,2.955,1],[2.56,2.955],[2.7` |
+|　├ port590_civ_e | 44017 | `function port590_civ_e(A){` |
+|　│　（port590_civ_e 中段）| 44459 | `boxZ(g,cu0,cv0,cu1-cu0,cv1-cv0,0,zC,null,'#bb8753','#86593a'` |
+|　├ port590_civ_f | 44901 | `function port590_civ_f(A){` |
+|　│　（port590_civ_f 中段）| 45308 | `Sc.o(1.12,g=>{boxZ(g,.34-3.5/32,v1,7/32,.08,0,1,C.concH,C.st` |
+|　├ port590_civ_g | 45716 | `function port590_civ_g(A){` |
+|　├ port590_civ_h | 46432 | `function port590_civ_h(A){` |
+|　│　（port590_civ_h 中段）| 46820 | `shadow(g,[['b',.12,.18,1.76,.98,ZB],['b',.16,.26,.5,.78,ZB+2` |
+|　├ port590_cul_a | 47208 | `function port590_cul_a(A){` |
+|　│　（port590_cul_a 中段）| 47640 | `faceL(g,vp,a0,b0,zE+2,zE+3,'#fffaf0');faceR(g,b0,vw,vp,zE+2,` |
+|　├ port590_cul_b | 48071 | `function port590_cul_b(A){` |
+|　├ port590_cul_c | 48725 | `function port590_cul_c(A){` |
+|　│　（port590_cul_c 中段）| 49208 | `// -------- v2 南角正面大門＋中軸大道＋鳥園網籠 --------` |
+|　├ port590_cul_d | 49692 | `function port590_cul_d(A){` |
+|　│　（port590_cul_d 中段）| 50213 | `const signL=(g2,n2,v,ua,ub,za,zb,str,bg)=>{faceL(g2,v,ua,ub,` |
+|　├ port590_cul_e | 50735 | `function port590_cul_e(A){` |
+|　│　（port590_cul_e 中段）| 51162 | `const under=(rin<2&&r>rin-.01&&h.z<zr-2&&w>.5);` |
+|　├ port590_cul_f | 51589 | `function port590_cul_f(A){` |
+|　├ port590_bay_a | 52242 | `function port590_bay_a(A){` |
+|　├ 冬側版 winter590（57 張草坪新圖，名單 win590）| 52943 | `function winter590(` |
+|　└ buildSpritesS19（兩條開機鏈各一次）| 52950 | `function buildSpritesS19(` |
+| 消防局英式外觀 T635（v0 批准款；spr635／bakeFire635） | 52974 | `/* ===== T635 FIRE CANDIDATE BEGIN =====` |
+| 消防局變體 T638（v1／v2；t638On／vi638／spr638／bakeFire638） | 53079 | `/* ===== T638 FIRE VARIANTS BEGIN =====` |
+| 英式高街 T670（十款獨立烘圖與玻璃窗細修） | 53727 | `function t670On(){` |
+| 第一波商店不吃舊 T427 疊層 T659（t659On 逃生閥） | 54129 | `function t659On(){` |
+| `window.GV` 除錯鉤子（194 鍵） | 54133 | `window.GV={` |
+| └ `sprAtlas356()` 素材清冊／像素稽核入口 | 54295 | `sprAtlas356:()=>{` |
 
-| 港區 T677：純幾何、守恆與單批 runtime | 54824 | `/* T677 BEGIN：` |
-| 港區 T677：真城市布局／接受時間／記憶體批次 | 55236 | `const P06=window.P06={enabled:false` |
-| 港區 T677：正式模型清冊 | 55315 | `function art677(emit){` |
+| 港區 T677：純幾何、守恆與單批 runtime | 54829 | `/* T677 BEGIN：` |
+| 港區 T677：真城市布局／接受時間／記憶體批次 | 55241 | `const P06=window.P06={enabled:false` |
+| 港區 T677：正式模型清冊 | 55320 | `function art677(emit){` |
 
 外部檔：`sw.js`（APP_VER 於第 6 行）、`test_fixde.js`、`tools/{verify,merge_bay,bump,test_toolchain}.py`、`tools/gen_spr_baseline.js`、`tools/spr_families.json`、`.gitattributes`。
 
